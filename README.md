@@ -39,7 +39,7 @@ Publish Directory: ./dist
 커스텀 도메인 연결 후 다음 환경변수를 추가하고 재배포합니다.
 
 ```env
-SITE_URL=https://www.example.com
+SITE_URL=https://fortunedaily.co.kr
 ```
 
 ## 콘텐츠 수정

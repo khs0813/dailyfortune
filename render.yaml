@@ -8,6 +8,8 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22.16.0
+      - key: SITE_URL
+        value: https://fortunedaily.co.kr
     headers:
       - path: /*
         name: X-Content-Type-Options

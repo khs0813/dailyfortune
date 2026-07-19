@@ -1,5 +1,6 @@
 ---
 import signs from '../data/signs.json';
+import ScoreProgress from './ScoreProgress.astro';
 const { period = 'daily', fixedType = '', fixedSlug = '', title = '오늘의 운세', description = '띠 또는 별자리를 선택하면 오늘의 흐름을 바로 확인할 수 있습니다.', compact = false } = Astro.props;
 const zodiac = signs.filter((item)=>item.type==='zodiac');
 const horoscope = signs.filter((item)=>item.type==='horoscope');
@@ -31,7 +32,7 @@ const horoscope = signs.filter((item)=>item.type==='horoscope');
     <header class="result-hero">
       <div class="result-sign" data-result-icon aria-hidden="true">✨</div>
       <div class="result-copy"><span data-result-date>오늘</span><h3 data-result-title>운세를 준비하고 있습니다</h3><p data-result-overall>잠시 후 결과가 표시됩니다.</p><div class="keyword-row"><span>오늘의 키워드</span><strong data-result-keyword>준비</strong></div></div>
-      <div class="score-orbit" aria-label="종합 흐름 점수"><strong data-result-score>0</strong><span>/ 5</span></div>
+      <ScoreProgress />
     </header>
     <div class="fortune-grid">
       <section class="fortune-metric" data-metric="relationship"><div class="metric-head"><span>💞 관계</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
