@@ -1,0 +1,70 @@
+---
+import signs from '../data/signs.json';
+
+interface Props {
+  context: 'home' | 'today' | 'weekly' | 'monthly' | 'profile';
+  fixedType?: string;
+  fixedSlug?: string;
+}
+
+type NextFortuneItem = {
+  href: string;
+  label: string;
+  profile?: boolean;
+  period?: 'daily' | 'weekly' | 'monthly';
+};
+
+const { context, fixedType = '', fixedSlug = '' } = Astro.props;
+const fixedSign = fixedType && fixedSlug ? signs.find((sign) => sign.type === fixedType && sign.slug === fixedSlug) : undefined;
+const fallbackSign = signs.find((sign) => sign.type === 'zodiac' && sign.slug === 'rat') ?? signs[0];
+const profileHref = fixedSign
+  ? `/${fixedSign.type === 'zodiac' ? 'zodiac' : 'horoscope'}/${fixedSign.slug}/`
+  : `/${fallbackSign.type === 'zodiac' ? 'zodiac' : 'horoscope'}/${fallbackSign.slug}/`;
+const profileLabel = fixedSign ? `${fixedSign.name} 상세 운세` : '선택한 프로필 상세';
+const itemsByContext: Record<Props['context'], NextFortuneItem[]> = {
+  home: [
+    { href: profileHref, label: profileLabel, profile: true },
+    { href: '/weekly/', label: '이번 주 운세', period: 'weekly' },
+    { href: '/monthly/', label: '이번 달 운세', period: 'monthly' }
+  ],
+  today: [
+    { href: profileHref, label: profileLabel, profile: true },
+    { href: '/weekly/', label: '이번 주 운세', period: 'weekly' },
+    { href: '/monthly/', label: '이번 달 운세', period: 'monthly' }
+  ],
+  weekly: [
+    { href: '/today/', label: '오늘 운세', period: 'daily' },
+    { href: '/monthly/', label: '이번 달 운세', period: 'monthly' },
+    { href: profileHref, label: profileLabel, profile: true }
+  ],
+  monthly: [
+    { href: '/today/', label: '오늘 운세', period: 'daily' },
+    { href: '/weekly/', label: '이번 주 운세', period: 'weekly' },
+    { href: profileHref, label: profileLabel, profile: true }
+  ],
+  profile: [
+    { href: '/today/', label: '오늘 운세', period: 'daily' },
+    { href: '/weekly/', label: '주간 운세', period: 'weekly' },
+    { href: '/monthly/', label: '월간 운세', period: 'monthly' }
+  ]
+};
+const items = itemsByContext[context];
+---
+<nav class="next-fortune-links" data-next-fortune-links aria-label="다음 운세 보기">
+  <span>다음 흐름 보기</span>
+  <div>
+    {items.map((item) => (
+      <a
+        class="button secondary"
+        href={item.href}
+        data-fortune-link={item.profile ? 'profile' : 'period'}
+        data-fortune-period={item.period}
+        data-profile-type={fixedSign?.type}
+        data-profile-slug={fixedSign?.slug}
+        data-next-profile-link={item.profile ? true : undefined}
+      >
+        <span data-next-profile-label={item.profile ? true : undefined}>{item.label}</span>
+      </a>
+    ))}
+  </div>
+</nav>

@@ -1,7 +1,39 @@
 ---
 import signs from '../data/signs.json';
 import ScoreProgress from './ScoreProgress.astro';
-const { period = 'daily', fixedType = '', fixedSlug = '', title = '오늘의 운세', description = '띠 또는 별자리를 선택하면 오늘의 흐름을 바로 확인할 수 있습니다.', compact = false } = Astro.props;
+import AdFitSlot from './AdFitSlot.astro';
+import NextFortuneLinks from './NextFortuneLinks.astro';
+import type { AdFitPlacement } from '../adfit';
+
+type FortunePeriod = 'daily' | 'weekly' | 'monthly';
+type NextLinksContext = 'home' | 'today' | 'weekly' | 'monthly' | 'profile';
+
+interface Props {
+  period?: FortunePeriod;
+  fixedType?: string;
+  fixedSlug?: string;
+  title?: string;
+  description?: string;
+  compact?: boolean;
+  adPlacement?: AdFitPlacement;
+  nextLinks?: NextLinksContext;
+}
+
+const {
+  period = 'daily',
+  fixedType = '',
+  fixedSlug = '',
+  title = '오늘의 운세',
+  description = '띠 또는 별자리를 선택하면 오늘의 흐름을 바로 확인할 수 있습니다.',
+  compact = false,
+  adPlacement,
+  nextLinks
+} = Astro.props as Props;
+const periodCopy = {
+  daily: { date: '오늘', keyword: '오늘의 키워드', countdown: '내일 운세까지' },
+  weekly: { date: '이번 주', keyword: '이번 주의 키워드', countdown: '다음 주까지' },
+  monthly: { date: '이번 달', keyword: '이번 달의 키워드', countdown: '다음 달까지' }
+}[period];
 const zodiac = signs.filter((item)=>item.type==='zodiac');
 const horoscope = signs.filter((item)=>item.type==='horoscope');
 ---
@@ -31,7 +63,7 @@ const horoscope = signs.filter((item)=>item.type==='horoscope');
   <article class="fortune-result" data-result aria-live="polite">
     <header class="result-hero">
       <div class="result-sign" data-result-icon aria-hidden="true">✨</div>
-      <div class="result-copy"><span data-result-date>오늘</span><h3 data-result-title>운세를 준비하고 있습니다</h3><p data-result-overall>잠시 후 결과가 표시됩니다.</p><div class="keyword-row"><span>오늘의 키워드</span><strong data-result-keyword>준비</strong></div></div>
+      <div class="result-copy"><span data-result-date>{periodCopy.date}</span><h3 data-result-title>운세를 준비하고 있습니다</h3><p data-result-overall>잠시 후 결과가 표시됩니다.</p><div class="keyword-row"><span>{periodCopy.keyword}</span><strong data-result-keyword>준비</strong></div></div>
       <ScoreProgress />
     </header>
     <div class="fortune-grid">
@@ -42,8 +74,14 @@ const horoscope = signs.filter((item)=>item.type==='horoscope');
     </div>
     <div class="lucky-strip"><div><span>행운 색상</span><strong data-color>-</strong></div><div><span>행운 숫자</span><strong data-number>-</strong></div><div><span>집중 시간</span><strong data-time>-</strong></div><div><span>방향</span><strong data-direction>-</strong></div></div>
     <div class="action-grid"><section><span class="mini-label good">오늘 해볼 일</span><strong data-action>-</strong></section><section><span class="mini-label caution">조심할 흐름</span><strong data-caution>-</strong></section></div>
-    <div class="result-footer"><p><span data-countdown-label>내일 운세까지</span> <strong data-countdown>--:--:--</strong></p><div class="button-row"><button class="button primary" type="button" data-share-result>결과 공유</button>{!fixedSlug && <a class="button secondary" data-detail-link href="/today/">상세 페이지</a>}<button class="button ghost" type="button" data-install hidden>홈 화면에 추가</button></div></div>
+    <div class="result-footer"><p><span data-countdown-label>{periodCopy.countdown}</span> <strong data-countdown>--:--:--</strong></p><div class="button-row"><button class="button primary" type="button" data-share-result>결과 공유</button>{!fixedSlug && <a class="button secondary" data-detail-link href="/today/">상세 페이지</a>}<button class="button ghost" type="button" data-install hidden>홈 화면에 추가</button></div></div>
   </article>
   <p class="fortune-disclaimer">운세는 재미와 자기성찰을 위한 콘텐츠입니다. 건강 증상, 투자, 계약, 법률 문제와 중요한 관계 결정은 확인 가능한 정보와 전문가 조언을 기준으로 하세요.</p>
+  {adPlacement && nextLinks && (
+    <div class="result-followup" data-result-ready-content hidden>
+      <AdFitSlot placement={adPlacement} requiresResult={true} className="adfit-slot--after-result" />
+      <NextFortuneLinks context={nextLinks} fixedType={fixedType} fixedSlug={fixedSlug} />
+    </div>
+  )}
 </section>
-<script type="module" src="/js/fortune-widget.js"></script>
+<script is:inline type="module" src="/js/fortune-widget.js"></script>

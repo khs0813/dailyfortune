@@ -1,6 +1,11 @@
 (() => {
   const toast = document.querySelector('[data-toast]');
   let toastTimer;
+  window.trackFortuneEvent = (name, params = {}) => {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', name, params);
+  };
+
   window.showToast = (message) => {
     if (!toast) return;
     toast.textContent = message;
@@ -36,4 +41,18 @@
       else { await navigator.clipboard.writeText(location.href); window.showToast?.('주소를 복사했습니다.'); }
     } catch (error) { if (error?.name !== 'AbortError') window.showToast?.('공유하지 못했습니다.'); }
   }));
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest?.('[data-fortune-link]');
+    if (!link) return;
+    const params = {
+      route: location.pathname,
+      period: link.dataset.fortunePeriod || undefined,
+      profile_type: link.dataset.profileType || undefined,
+      profile_slug: link.dataset.profileSlug || undefined
+    };
+    if (link.dataset.fortuneLink === 'period') window.trackFortuneEvent('fortune_period_click', params);
+    if (link.dataset.fortuneLink === 'profile') window.trackFortuneEvent('fortune_profile_detail_click', params);
+    if (link.dataset.fortuneLink === 'related') window.trackFortuneEvent('related_profile_click', params);
+  });
 })();

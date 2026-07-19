@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';import FortuneApp from '../components/FortuneApp.astro';
 ---
-<BaseLayout title="이번 주 띠별·별자리 운세와 주간 키워드 | 오늘운" description="띠 또는 별자리를 선택해 이번 주의 관계, 일·공부, 재물, 컨디션 흐름과 주간 행동 키워드를 확인하세요.">
-<header class="page-head"><div class="shell"><nav class="breadcrumb"><a href="/">홈</a><span>›</span><span>주간 운세</span></nav><span class="eyebrow">월요일부터 일요일까지</span><h1>이번 주 운세</h1><p>하루의 사건을 예측하기보다 이번 주에 유지할 태도와 점검할 생활 영역을 고르는 데 활용하세요.</p></div></header><section class="shell" style="padding-bottom:4rem"><FortuneApp period="weekly" title="이번 주의 흐름" description="선택한 띠 또는 별자리와 현재 주차를 조합해 같은 주에는 같은 결과를 보여 줍니다." /></section>
+<BaseLayout title="이번 주 띠별·별자리 운세와 주간 키워드 | 오늘운" description="띠 또는 별자리를 선택해 이번 주의 관계, 일·공부, 재물, 컨디션 흐름과 주간 행동 키워드를 확인하세요." adFitPage={true}>
+<header class="page-head"><div class="shell"><nav class="breadcrumb"><a href="/">홈</a><span>›</span><span>주간 운세</span></nav><span class="eyebrow">월요일부터 일요일까지</span><h1>이번 주 운세</h1><p>하루의 사건을 예측하기보다 이번 주에 유지할 태도와 점검할 생활 영역을 고르는 데 활용하세요.</p></div></header><section class="shell" style="padding-bottom:4rem"><FortuneApp period="weekly" title="이번 주의 흐름" description="선택한 띠 또는 별자리와 현재 주차를 조합해 같은 주에는 같은 결과를 보여 줍니다." adPlacement="weekly.afterResult" nextLinks="weekly" /></section>
 </BaseLayout>

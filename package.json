@@ -7,6 +7,9 @@
     "dev": "npm run prepare:data && astro dev",
     "prepare:data": "node scripts/prepare-data.mjs",
     "validate": "node scripts/validate-content.mjs",
+    "test:adfit": "node scripts/validate-adfit.mjs",
+    "lint": "npm run validate && npm run test:adfit",
+    "typecheck": "astro check",
     "build": "npm run validate && npm run prepare:data && astro build && node scripts/generate-sw.mjs",
     "preview": "astro preview"
   },
@@ -16,5 +19,9 @@
   },
   "engines": {
     "node": ">=22.12.0 <25.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^6.0.3"
   }
 }

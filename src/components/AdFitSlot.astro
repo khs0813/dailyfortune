@@ -1,0 +1,52 @@
+---
+import {
+  getAdFitPlacement,
+  isAdFitDesktopSideRailEnabled,
+  isAdFitEnabled,
+  isAdFitProfileThirdEnabled,
+  type AdFitPlacement
+} from '../adfit';
+
+interface Props {
+  placement: AdFitPlacement;
+  enabled?: boolean;
+  className?: string;
+  requiresResult?: boolean;
+}
+
+const { placement, enabled = true, className = '', requiresResult = false } = Astro.props;
+const config = getAdFitPlacement(placement);
+const globallyEnabled = isAdFitEnabled();
+const thirdAllowed = placement !== 'profile.mid' || isAdFitProfileThirdEnabled();
+const sideAllowed = placement !== 'profile.side' || isAdFitDesktopSideRailEnabled();
+const shouldRender = globallyEnabled && enabled && thirdAllowed && sideAllowed && config.hasAnyUnit;
+const missingKey = globallyEnabled && enabled && thirdAllowed && sideAllowed && !config.hasAnyUnit;
+const classes = [
+  'adfit-slot',
+  requiresResult ? 'adfit-slot--pending' : '',
+  className
+].filter(Boolean).join(' ');
+---
+{shouldRender ? (
+  <aside
+    class={classes}
+    aria-label="광고"
+    data-adfit-slot
+    data-adfit-placement={placement}
+    data-adfit-requires-result={requiresResult ? 'true' : 'false'}
+    data-adfit-mobile-unit={config.mobile?.unit ?? ''}
+    data-adfit-mobile-width={config.mobile?.width ?? ''}
+    data-adfit-mobile-height={config.mobile?.height ?? ''}
+    data-adfit-desktop-unit={config.desktop?.unit ?? ''}
+    data-adfit-desktop-width={config.desktop?.width ?? ''}
+    data-adfit-desktop-height={config.desktop?.height ?? ''}
+    data-adfit-desktop-fallback-unit={config.desktopFallback?.unit ?? ''}
+    data-adfit-desktop-fallback-width={config.desktopFallback?.width ?? ''}
+    data-adfit-desktop-fallback-height={config.desktopFallback?.height ?? ''}
+  >
+    <span class="adfit-slot__label">광고</span>
+    <div class="adfit-slot__frame" data-adfit-frame></div>
+  </aside>
+) : missingKey ? (
+  <template data-adfit-missing={placement} data-adfit-missing-keys={config.missingKeys.join(',')}></template>
+) : null}
