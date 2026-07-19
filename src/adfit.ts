@@ -5,11 +5,8 @@ export type AdFitPlacement =
   | 'weekly.afterResult'
   | 'monthly.afterResult'
   | 'profile.afterResult'
-  | 'profile.afterLife'
-  | 'profile.mid'
-  | 'profile.side'
-  | 'directory.afterGrid'
-  | 'guide.mid';
+  | 'profile.midLife'
+  | 'directory.mid';
 
 export type AdFitVariant = {
   envKey: string;
@@ -21,7 +18,6 @@ export type AdFitVariant = {
 type PlacementDefinition = {
   mobile?: Omit<AdFitVariant, 'unit'>;
   desktop?: Omit<AdFitVariant, 'unit'>;
-  desktopFallback?: Omit<AdFitVariant, 'unit'>;
 };
 
 export const adFitScriptSrc = 'https://t1.kakaocdn.net/kas/static/ba.min.js';
@@ -34,13 +30,11 @@ const publicKey = (key: string) => `PUBLIC_${key}`;
 const definitions: Record<AdFitPlacement, PlacementDefinition> = {
   'home.afterResult': {
     mobile: { envKey: publicKey('ADFIT_HOME_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_HOME_AFTER_RESULT_D_728X90'), width: 728, height: 90 },
-    desktopFallback: { envKey: publicKey('ADFIT_HOME_AFTER_RESULT_D_300X250'), width: 300, height: 250 }
+    desktop: { envKey: publicKey('ADFIT_HOME_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
   },
   'home.betweenDirectories': {
     mobile: { envKey: publicKey('ADFIT_HOME_BETWEEN_DIRECTORIES_M_300X250'), width: 300, height: 250 },
-    desktop: { envKey: publicKey('ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90'), width: 728, height: 90 },
-    desktopFallback: { envKey: publicKey('ADFIT_HOME_BETWEEN_DIRECTORIES_D_300X250'), width: 300, height: 250 }
+    desktop: { envKey: publicKey('ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90'), width: 728, height: 90 }
   },
   'today.afterResult': {
     mobile: { envKey: publicKey('ADFIT_TODAY_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
@@ -58,24 +52,13 @@ const definitions: Record<AdFitPlacement, PlacementDefinition> = {
     mobile: { envKey: publicKey('ADFIT_PROFILE_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
     desktop: { envKey: publicKey('ADFIT_PROFILE_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
   },
-  'profile.afterLife': {
-    mobile: { envKey: publicKey('ADFIT_PROFILE_AFTER_LIFE_M_300X250'), width: 300, height: 250 },
-    desktop: { envKey: publicKey('ADFIT_PROFILE_AFTER_LIFE_D_300X250'), width: 300, height: 250 }
+  'profile.midLife': {
+    mobile: { envKey: publicKey('ADFIT_PROFILE_MID_LIFE_M_300X250'), width: 300, height: 250 },
+    desktop: { envKey: publicKey('ADFIT_PROFILE_MID_LIFE_D_300X250'), width: 300, height: 250 }
   },
-  'profile.mid': {
-    mobile: { envKey: publicKey('ADFIT_PROFILE_MID_M_300X250'), width: 300, height: 250 },
-    desktop: { envKey: publicKey('ADFIT_PROFILE_MID_D_300X250'), width: 300, height: 250 }
-  },
-  'profile.side': {
-    desktop: { envKey: publicKey('ADFIT_PROFILE_SIDE_D_160X600'), width: 160, height: 600 }
-  },
-  'directory.afterGrid': {
-    mobile: { envKey: publicKey('ADFIT_DIRECTORY_AFTER_GRID_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_DIRECTORY_AFTER_GRID_D_728X90'), width: 728, height: 90 }
-  },
-  'guide.mid': {
-    mobile: { envKey: publicKey('ADFIT_GUIDE_MID_M_300X250'), width: 300, height: 250 },
-    desktop: { envKey: publicKey('ADFIT_GUIDE_MID_D_300X250'), width: 300, height: 250 }
+  'directory.mid': {
+    mobile: { envKey: publicKey('ADFIT_DIRECTORY_MID_M_320X100'), width: 320, height: 100 },
+    desktop: { envKey: publicKey('ADFIT_DIRECTORY_MID_D_728X90'), width: 728, height: 90 }
   }
 };
 
@@ -88,17 +71,12 @@ export const isAdFitEnabled = () =>
   env.MODE !== 'test' && readEnv(publicKey('ADFIT_ENABLED')) === 'true';
 export const getAdFitAllowedHosts = () =>
   readEnv(publicKey('ADFIT_ALLOWED_HOSTS')) || defaultAdFitAllowedHosts;
-export const isAdFitProfileThirdEnabled = () =>
-  readEnv(publicKey('ADFIT_PROFILE_THIRD_ENABLED')) === 'true';
-export const isAdFitDesktopSideRailEnabled = () =>
-  readEnv(publicKey('ADFIT_DESKTOP_SIDE_RAIL_ENABLED')) === 'true';
 
 export const getAdFitPlacement = (placement: AdFitPlacement) => {
   const definition = definitions[placement];
   const mobile = withUnit(definition.mobile);
   const desktop = withUnit(definition.desktop);
-  const desktopFallback = withUnit(definition.desktopFallback);
-  const variants = [mobile, desktop, desktopFallback].filter(Boolean) as AdFitVariant[];
+  const variants = [mobile, desktop].filter(Boolean) as AdFitVariant[];
   const configuredVariants = variants.filter((variant) => variant.unit);
   const missingKeys = variants
     .filter((variant) => !variant.unit)
@@ -108,7 +86,6 @@ export const getAdFitPlacement = (placement: AdFitPlacement) => {
     placement,
     mobile,
     desktop,
-    desktopFallback,
     configuredVariants,
     missingKeys,
     hasAnyUnit: configuredVariants.length > 0

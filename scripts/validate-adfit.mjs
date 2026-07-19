@@ -12,14 +12,10 @@ const count = (text, pattern) => (text.match(new RegExp(pattern, 'g')) || []).le
 const requiredEnvKeys = [
   'PUBLIC_ADFIT_ENABLED',
   'PUBLIC_ADFIT_ALLOWED_HOSTS',
-  'PUBLIC_ADFIT_PROFILE_THIRD_ENABLED',
-  'PUBLIC_ADFIT_DESKTOP_SIDE_RAIL_ENABLED',
   'PUBLIC_ADFIT_HOME_AFTER_RESULT_M_320X100',
   'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_300X250',
   'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_M_300X250',
   'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90',
-  'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_300X250',
   'PUBLIC_ADFIT_TODAY_AFTER_RESULT_M_320X100',
   'PUBLIC_ADFIT_TODAY_AFTER_RESULT_D_728X90',
   'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_M_320X100',
@@ -28,15 +24,10 @@ const requiredEnvKeys = [
   'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_D_728X90',
   'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_M_320X100',
   'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_PROFILE_AFTER_LIFE_M_300X250',
-  'PUBLIC_ADFIT_PROFILE_AFTER_LIFE_D_300X250',
-  'PUBLIC_ADFIT_PROFILE_MID_M_300X250',
-  'PUBLIC_ADFIT_PROFILE_MID_D_300X250',
-  'PUBLIC_ADFIT_PROFILE_SIDE_D_160X600',
-  'PUBLIC_ADFIT_DIRECTORY_AFTER_GRID_M_320X100',
-  'PUBLIC_ADFIT_DIRECTORY_AFTER_GRID_D_728X90',
-  'PUBLIC_ADFIT_GUIDE_MID_M_300X250',
-  'PUBLIC_ADFIT_GUIDE_MID_D_300X250'
+  'PUBLIC_ADFIT_PROFILE_MID_LIFE_M_300X250',
+  'PUBLIC_ADFIT_PROFILE_MID_LIFE_D_300X250',
+  'PUBLIC_ADFIT_DIRECTORY_MID_M_320X100',
+  'PUBLIC_ADFIT_DIRECTORY_MID_D_728X90'
 ];
 
 const sourceChecks = [
@@ -44,12 +35,10 @@ const sourceChecks = [
   ['src/pages/today.astro', { 'today.afterResult': 1 }],
   ['src/pages/weekly.astro', { 'weekly.afterResult': 1 }],
   ['src/pages/monthly.astro', { 'monthly.afterResult': 1 }],
-  ['src/pages/zodiac/index.astro', { 'directory.afterGrid': 1 }],
-  ['src/pages/horoscope/index.astro', { 'directory.afterGrid': 1 }],
-  ['src/pages/guide/how-results-work.astro', { 'guide.mid': 1 }],
-  ['src/pages/guide/zodiac-horoscope.astro', { 'guide.mid': 1 }],
-  ['src/pages/zodiac/[slug].astro', { 'profile.afterResult': 1, 'profile.afterLife': 1, 'profile.side': 1 }],
-  ['src/pages/horoscope/[slug].astro', { 'profile.afterResult': 1, 'profile.afterLife': 1, 'profile.side': 1 }]
+  ['src/pages/zodiac/index.astro', { 'directory.mid': 1 }],
+  ['src/pages/horoscope/index.astro', { 'directory.mid': 1 }],
+  ['src/pages/zodiac/[slug].astro', { 'profile.afterResult': 1, 'profile.midLife': 1 }],
+  ['src/pages/horoscope/[slug].astro', { 'profile.afterResult': 1, 'profile.midLife': 1 }]
 ];
 
 for (const [path, placements] of sourceChecks) {
@@ -60,7 +49,13 @@ for (const [path, placements] of sourceChecks) {
   }
 }
 
-for (const policyPath of ['src/pages/about.astro', 'src/pages/privacy.astro', 'src/pages/404.astro']) {
+for (const policyPath of [
+  'src/pages/about.astro',
+  'src/pages/privacy.astro',
+  'src/pages/404.astro',
+  'src/pages/guide/how-results-work.astro',
+  'src/pages/guide/zodiac-horoscope.astro'
+]) {
   const text = await read(policyPath);
   if (text.includes('AdFitSlot')) fail(`${policyPath} must not import or render AdFitSlot`);
   if (text.includes('adFitPage={true}')) fail(`${policyPath} must not enable the AdFit bootstrap`);
@@ -78,16 +73,41 @@ if (!adfitClient.includes('kakao_ad_area')) fail('public/js/adfit-slots.js must 
 for (const attr of ['data-ad-unit', 'data-ad-width', 'data-ad-height']) {
   if (!adfitClient.includes(attr)) fail(`public/js/adfit-slots.js missing ${attr}`);
 }
+if (!adfitClient.includes('data-ad-onfail')) fail('public/js/adfit-slots.js must preserve NO-AD callback compatibility');
 if (adfitClient.includes('daumcdn')) fail('Do not use legacy daumcdn AdFit scripts');
-if (!adfitClient.includes('window.adfit.render')) fail('Dynamic slots should render with the verified SDK render API when available');
+if (adfitClient.includes('window.adfit.render')) fail('Do not call non-required AdFit render globals');
 for (const guard of ['localhost', '127.0.0.1', '.onrender.com', 'allowedHosts.includes(hostname)']) {
   if (!adfitClient.includes(guard)) fail(`public/js/adfit-slots.js missing host guard: ${guard}`);
 }
 if (!adfitClient.includes('mountedPlacements')) fail('AdFit client must guard duplicate placement mounts');
-if (!adfitClient.includes('Math.min(pageLimit(), 3)')) fail('AdFit client must cap route ad count below 4');
+if (!adfitClient.includes('bootstrapped')) fail('AdFit client must guard duplicate SDK requests');
 if (!adfitClient.includes('fortune:result-rendered')) fail('AdFit client must wait for result-rendered events');
+if (!adfitClient.includes('ad_slot_mounted')) fail('AdFit slot mounted visibility analytics event is missing');
+if (!adfitClient.includes('ad_slot_viewport_entered')) fail('AdFit viewport entered analytics event is missing');
+if (!adfitClient.includes('ad_slot_viewport_50_1s')) fail('AdFit 50 percent viewport analytics event is missing');
 if (!fortuneWidget.includes('fortune:result-rendered')) fail('Fortune results must dispatch fortune:result-rendered');
 if (!fortuneWidget.includes('fortune_result_rendered')) fail('Fortune result analytics event is missing');
+if (!fortuneWidget.includes('dataset.resultReady')) fail('Fortune result readiness state is missing');
+
+for (const removed of [
+  'PUBLIC_ADFIT_PROFILE_THIRD_ENABLED',
+  'PUBLIC_ADFIT_DESKTOP_SIDE_RAIL_ENABLED',
+  'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_300X250',
+  'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_300X250',
+  'PUBLIC_ADFIT_PROFILE_AFTER_LIFE_M_300X250',
+  'PUBLIC_ADFIT_PROFILE_AFTER_LIFE_D_300X250',
+  'PUBLIC_ADFIT_PROFILE_MID_M_300X250',
+  'PUBLIC_ADFIT_PROFILE_MID_D_300X250',
+  'PUBLIC_ADFIT_PROFILE_SIDE_D_160X600',
+  'PUBLIC_ADFIT_DIRECTORY_AFTER_GRID_M_320X100',
+  'PUBLIC_ADFIT_DIRECTORY_AFTER_GRID_D_728X90',
+  'PUBLIC_ADFIT_GUIDE_MID_M_300X250',
+  'PUBLIC_ADFIT_GUIDE_MID_D_300X250'
+]) {
+  if (adfitConfig.includes(removed)) fail(`src/adfit.ts still references removed env key ${removed}`);
+  if (envExample.includes(`${removed}=`)) fail(`.env.example still contains removed env key ${removed}`);
+  if (renderYaml.includes(`key: ${removed}`)) fail(`render.yaml still contains removed env key ${removed}`);
+}
 
 for (const key of requiredEnvKeys) {
   if (!envExample.includes(`${key}=`)) fail(`.env.example missing ${key}`);

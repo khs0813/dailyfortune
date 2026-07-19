@@ -16,21 +16,13 @@ services:
         value: "false"
       - key: PUBLIC_ADFIT_ALLOWED_HOSTS
         value: fortunedaily.co.kr,www.fortunedaily.co.kr
-      - key: PUBLIC_ADFIT_PROFILE_THIRD_ENABLED
-        value: "false"
-      - key: PUBLIC_ADFIT_DESKTOP_SIDE_RAIL_ENABLED
-        value: "false"
       - key: PUBLIC_ADFIT_HOME_AFTER_RESULT_M_320X100
         sync: false
       - key: PUBLIC_ADFIT_HOME_AFTER_RESULT_D_728X90
         sync: false
-      - key: PUBLIC_ADFIT_HOME_AFTER_RESULT_D_300X250
-        sync: false
       - key: PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_M_300X250
         sync: false
       - key: PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90
-        sync: false
-      - key: PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_300X250
         sync: false
       - key: PUBLIC_ADFIT_TODAY_AFTER_RESULT_M_320X100
         sync: false
@@ -48,23 +40,13 @@ services:
         sync: false
       - key: PUBLIC_ADFIT_PROFILE_AFTER_RESULT_D_728X90
         sync: false
-      - key: PUBLIC_ADFIT_PROFILE_AFTER_LIFE_M_300X250
+      - key: PUBLIC_ADFIT_PROFILE_MID_LIFE_M_300X250
         sync: false
-      - key: PUBLIC_ADFIT_PROFILE_AFTER_LIFE_D_300X250
+      - key: PUBLIC_ADFIT_PROFILE_MID_LIFE_D_300X250
         sync: false
-      - key: PUBLIC_ADFIT_PROFILE_MID_M_300X250
+      - key: PUBLIC_ADFIT_DIRECTORY_MID_M_320X100
         sync: false
-      - key: PUBLIC_ADFIT_PROFILE_MID_D_300X250
-        sync: false
-      - key: PUBLIC_ADFIT_PROFILE_SIDE_D_160X600
-        sync: false
-      - key: PUBLIC_ADFIT_DIRECTORY_AFTER_GRID_M_320X100
-        sync: false
-      - key: PUBLIC_ADFIT_DIRECTORY_AFTER_GRID_D_728X90
-        sync: false
-      - key: PUBLIC_ADFIT_GUIDE_MID_M_300X250
-        sync: false
-      - key: PUBLIC_ADFIT_GUIDE_MID_D_300X250
+      - key: PUBLIC_ADFIT_DIRECTORY_MID_D_728X90
         sync: false
     headers:
       - path: /*

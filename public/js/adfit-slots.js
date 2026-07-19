@@ -7,14 +7,31 @@
     .filter(Boolean);
   const sdkSrc = doc.dataset.adfitScriptSrc || 'https://t1.kakaocdn.net/kas/static/ba.min.js';
   const hostname = window.location.hostname;
-  const mountedPlacements = new Set();
   const warned = new Set();
-  let mountedCount = 0;
-  let sdkScriptRequested = false;
+  const mountedPlacements = new Set();
+  let bootstrapped = false;
+  let noAdCallbackCount = 0;
 
-  const track = (name, params) => {
-    if (typeof window.gtag !== 'function') return;
-    window.gtag('event', name, params);
+  const viewportWidthGroup = () => {
+    const width = window.innerWidth;
+    if (width <= 360) return '320_360';
+    if (width <= 480) return '361_480';
+    if (width <= 768) return '481_768';
+    if (width <= 1024) return '769_1024';
+    return '1025_plus';
+  };
+
+  const track = (name, params = {}) => {
+    const payload = {
+      route: location.pathname,
+      viewport_width_group: viewportWidthGroup(),
+      ...params
+    };
+    if (typeof window.trackFortuneEvent === 'function') {
+      window.trackFortuneEvent(name, payload);
+      return;
+    }
+    if (typeof window.gtag === 'function') window.gtag('event', name, payload);
   };
 
   const warnOnce = (key, message) => {
@@ -38,10 +55,7 @@
     if (path === '/') return 2;
     if (path === '/today/' || path === '/weekly/' || path === '/monthly/') return 1;
     if (path === '/zodiac/' || path === '/horoscope/') return 1;
-    if (path.startsWith('/guide/')) return 1;
-    if (/^\/(zodiac|horoscope)\/[^/]+\/$/.test(path)) {
-      return doc.dataset.adfitProfileThirdEnabled === 'true' ? 3 : 2;
-    }
+    if (/^\/(zodiac|horoscope)\/[^/]+\/$/.test(path)) return 2;
     return 0;
   };
 
@@ -63,80 +77,79 @@
       };
     }
 
-    const width = Number(slot.dataset.adfitDesktopWidth);
-    const frame = slot.querySelector('[data-adfit-frame]');
-    const availableWidth = Math.floor(frame?.getBoundingClientRect().width || window.innerWidth);
-    if (slot.dataset.adfitDesktopUnit && width && availableWidth >= width) {
-      return {
-        device: 'desktop',
-        unit: slot.dataset.adfitDesktopUnit,
-        width,
-        height: Number(slot.dataset.adfitDesktopHeight)
-      };
-    }
-    if (slot.dataset.adfitDesktopFallbackUnit) {
-      return {
-        device: 'desktop',
-        unit: slot.dataset.adfitDesktopFallbackUnit,
-        width: Number(slot.dataset.adfitDesktopFallbackWidth),
-        height: Number(slot.dataset.adfitDesktopFallbackHeight)
-      };
-    }
-    if (slot.dataset.adfitDesktopUnit) {
-      return {
-        device: 'desktop',
-        unit: slot.dataset.adfitDesktopUnit,
-        width,
-        height: Number(slot.dataset.adfitDesktopHeight)
-      };
-    }
-    return null;
+    const unit = slot.dataset.adfitDesktopUnit;
+    if (!unit) return null;
+    return {
+      device: 'desktop',
+      unit,
+      width: Number(slot.dataset.adfitDesktopWidth),
+      height: Number(slot.dataset.adfitDesktopHeight)
+    };
   };
 
-  const prepareProfileSideRail = () => {
-    const side = document.querySelector('[data-adfit-placement="profile.side"]');
-    if (!side) return;
-    const inline = document.querySelector('[data-adfit-placement="profile.afterLife"]');
-    const hasAsideColumn = side.closest('.profile-life-layout');
-    const wideEnough = window.matchMedia('(min-width: 1280px)').matches;
-    if (doc.dataset.adfitDesktopSideRailEnabled === 'true' && wideEnough && hasAsideColumn) {
-      inline?.remove();
-      return;
-    }
-    side.remove();
+  const createNoAdCallback = (slot, placement) => {
+    noAdCallbackCount += 1;
+    const name = `__dailyFortuneAdFitNoAd_${placement.replace(/[^A-Za-z0-9]/g, '_')}_${noAdCallbackCount}`;
+    window[name] = (ins) => {
+      const targetSlot = ins?.closest?.('[data-adfit-slot]') || slot;
+      targetSlot.dataset.adfitNoAd = 'true';
+      targetSlot.querySelector('[data-adfit-fallback]')?.removeAttribute('aria-hidden');
+    };
+    return name;
   };
 
-  const requestSdkRender = (ins) => {
-    if (window.adfit && typeof window.adfit.render === 'function') {
-      window.adfit.render(ins);
-      return;
-    }
-    if (sdkScriptRequested) return;
-    sdkScriptRequested = true;
-    const script = document.createElement('script');
-    script.async = true;
-    script.type = 'text/javascript';
-    script.charset = 'utf-8';
-    script.src = sdkSrc;
-    script.dataset.adfitSdk = 'true';
-    document.body.append(script);
+  const observeViewport = (slot, placement, device) => {
+    if (!('IntersectionObserver' in window)) return;
+    let entered = false;
+    let halfTracked = false;
+    let halfTimer = 0;
+    let lastRatio = 0;
+    const params = { placement, device };
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        lastRatio = entry.intersectionRatio;
+        if (entry.isIntersecting && !entered) {
+          entered = true;
+          track('ad_slot_viewport_entered', params);
+        }
+        if (entry.intersectionRatio >= 0.5 && !halfTracked && !halfTimer) {
+          halfTimer = window.setTimeout(() => {
+            halfTimer = 0;
+            if (lastRatio >= 0.5 && !halfTracked) {
+              halfTracked = true;
+              track('ad_slot_viewport_50_1s', params);
+            }
+            if (entered && halfTracked) observer.unobserve(slot);
+          }, 1000);
+        }
+        if (entry.intersectionRatio < 0.5 && halfTimer) {
+          window.clearTimeout(halfTimer);
+          halfTimer = 0;
+        }
+      }
+    }, { threshold: [0, 0.5, 1] });
+    observer.observe(slot);
   };
 
-  const mount = (slot) => {
+  const prepareSlot = (slot) => {
     const placement = slot.dataset.adfitPlacement;
-    if (!placement || slot.dataset.adfitMounted === 'true') return;
-    if (mountedPlacements.has(placement)) return;
-    if (mountedCount >= Math.min(pageLimit(), 3)) return;
+    if (!placement || slot.dataset.adfitMounted === 'true') return false;
+    if (mountedPlacements.has(placement)) {
+      slot.remove();
+      return false;
+    }
 
     const variant = chooseVariant(slot);
     if (!variant?.unit || !variant.width || !variant.height) {
       warnOnce(placement, `[AdFit] Missing configured unit for ${placement}`);
       slot.remove();
-      return;
+      return false;
     }
 
     const frame = slot.querySelector('[data-adfit-frame]');
-    if (!frame) return;
+    if (!frame) return false;
+
+    frame.querySelectorAll('ins.kakao_ad_area').forEach((node) => node.remove());
     slot.style.setProperty('--adfit-width', `${variant.width}px`);
     slot.style.setProperty('--adfit-height', `${variant.height}px`);
     slot.dataset.adfitDevice = variant.device;
@@ -148,17 +161,47 @@
     ins.setAttribute('data-ad-unit', variant.unit);
     ins.setAttribute('data-ad-width', String(variant.width));
     ins.setAttribute('data-ad-height', String(variant.height));
-    frame.replaceChildren(ins);
+    ins.setAttribute('data-ad-onfail', createNoAdCallback(slot, placement));
+    frame.prepend(ins);
 
     mountedPlacements.add(placement);
-    mountedCount += 1;
-    track('ad_slot_eligible', { route: location.pathname, placement, device: variant.device });
-    track('ad_slot_mounted', { route: location.pathname, placement, device: variant.device });
-    requestSdkRender(ins);
+    track('ad_slot_mounted', { placement, device: variant.device });
+    observeViewport(slot, placement, variant.device);
+    return true;
   };
 
-  const mountReadySlots = (scope = document) => {
-    scope.querySelectorAll('[data-adfit-slot][data-adfit-requires-result="false"]').forEach(mount);
+  const requestSdkOnce = () => {
+    if (document.querySelector('script[data-adfit-sdk="true"]')) return;
+    const script = document.createElement('script');
+    script.async = true;
+    script.type = 'text/javascript';
+    script.charset = 'utf-8';
+    script.src = sdkSrc;
+    script.dataset.adfitSdk = 'true';
+    document.body.append(script);
+  };
+
+  const bootstrap = () => {
+    if (bootstrapped) return;
+    bootstrapped = true;
+
+    const limit = pageLimit();
+    if (limit <= 0) {
+      cleanup();
+      return;
+    }
+
+    const slots = [...document.querySelectorAll('[data-adfit-slot]')];
+    let prepared = 0;
+    for (const slot of slots) {
+      if (prepared >= limit) {
+        slot.remove();
+        continue;
+      }
+      if (prepareSlot(slot)) prepared += 1;
+    }
+
+    if (prepared > 0) requestSdkOnce();
   };
 
   if (isBlockedHost()) {
@@ -166,24 +209,43 @@
     return;
   }
 
-  prepareProfileSideRail();
-
   document.querySelectorAll('[data-adfit-missing]').forEach((item) => {
     warnOnce(item.dataset.adfitMissing || 'missing', `[AdFit] Missing env for ${item.dataset.adfitMissing}: ${item.dataset.adfitMissingKeys || ''}`);
   });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => mountReadySlots());
-  } else {
-    mountReadySlots();
-  }
-
-  document.addEventListener('fortune:result-rendered', (event) => {
-    const root = event.target;
-    if (!(root instanceof Element)) return;
+  const showResultContent = (root) => {
     root.querySelectorAll('[data-result-ready-content][hidden]').forEach((node) => {
       node.hidden = false;
     });
-    root.querySelectorAll('[data-adfit-slot][data-adfit-requires-result="true"]').forEach(mount);
+  };
+
+  const hasResultDependentSlot = () =>
+    Boolean(document.querySelector('[data-adfit-slot][data-adfit-requires-result="true"]'));
+
+  const bootstrapReadyResultPage = () => {
+    const apps = [...document.querySelectorAll('[data-fortune-app]')];
+    if (!apps.length || apps.some((app) => app.dataset.resultReady !== 'true')) return;
+    apps.forEach(showResultContent);
+    bootstrap();
+  };
+
+  document.addEventListener('fortune:result-rendered', (event) => {
+    const root = event.target;
+    if (root instanceof Element) showResultContent(root);
+    if (hasResultDependentSlot()) bootstrapReadyResultPage();
   });
+
+  const startStaticPage = () => {
+    if (hasResultDependentSlot()) {
+      bootstrapReadyResultPage();
+      return;
+    }
+    bootstrap();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startStaticPage);
+  } else {
+    startStaticPage();
+  }
 })();

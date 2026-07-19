@@ -187,8 +187,9 @@ ${location.origin}${detailHref(sign)}`;
       profile_type: sign.type,
       profile_slug: sign.slug
     };
-    root.dispatchEvent(new CustomEvent('fortune:result-rendered', { bubbles: true, detail: eventDetail }));
+    root.dataset.resultReady = 'true';
     track('fortune_result_rendered', eventDetail);
+    root.dispatchEvent(new CustomEvent('fortune:result-rendered', { bubbles: true, detail: eventDetail }));
   };
 
   tabs.forEach((btn) => btn.addEventListener('click', () => {

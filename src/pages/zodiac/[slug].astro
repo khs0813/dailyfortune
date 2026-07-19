@@ -1,11 +1,82 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';import FortuneApp from '../../components/FortuneApp.astro';import SignCard from '../../components/SignCard.astro';import AdFitSlot from '../../components/AdFitSlot.astro';import signs from '../../data/signs.json';
-export function getStaticPaths(){const paths=signs.filter(x=>x.type==='zodiac');return paths.map(sign=>({params:{slug:sign.slug},props:{sign}}))}const items=signs.filter(x=>x.type==='zodiac');const{sign}=Astro.props;const index=items.findIndex(x=>x.slug===sign.slug);const related=[items[(index+1)%12],items[(index+11)%12],items[(index+6)%12]];
-const faqs=[{q:`${sign.name} 오늘 운세는 언제 바뀌나요?`,a:'한국 시간 기준 자정에 날짜 키가 바뀌며 새로운 결과가 표시됩니다.'},{q:`${sign.name} 운세는 미래를 정확히 예측하나요?`,a:'아닙니다. 띠 상징과 날짜를 활용한 오락·자기성찰 콘텐츠이며 중요한 판단을 대신하지 않습니다.'}];
-const jsonLd=[{'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'홈',item:new URL('/',Astro.site).href},{'@type':'ListItem',position:2,name:'띠별 운세',item:new URL('/zodiac/',Astro.site).href},{'@type':'ListItem',position:3,name:`${sign.name} 오늘 운세`,item:Astro.url.href}]},{'@context':'https://schema.org','@type':'FAQPage',mainEntity:faqs.map(x=>({'@type':'Question',name:x.q,acceptedAnswer:{'@type':'Answer',text:x.a}}))}];
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FortuneApp from '../../components/FortuneApp.astro';
+import SignCard from '../../components/SignCard.astro';
+import AdFitSlot from '../../components/AdFitSlot.astro';
+import signs from '../../data/signs.json';
+
+export function getStaticPaths() {
+  const paths = signs.filter((x) => x.type === 'zodiac');
+  return paths.map((sign) => ({ params: { slug: sign.slug }, props: { sign } }));
+}
+
+const items = signs.filter((x) => x.type === 'zodiac');
+const { sign } = Astro.props;
+const index = items.findIndex((x) => x.slug === sign.slug);
+const related = [items[(index + 1) % 12], items[(index + 11) % 12], items[(index + 6) % 12]];
+const faqs = [
+  { q: `${sign.name} 오늘 운세는 언제 바뀌나요?`, a: '한국 시간 기준 자정에 날짜 키가 바뀌며 새로운 결과가 표시됩니다.' },
+  { q: `${sign.name} 운세는 미래를 정확히 예측하나요?`, a: '아닙니다. 띠 상징과 날짜를 활용한 오락·자기성찰 콘텐츠이며 중요한 판단을 대신하지 않습니다.' }
+];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: '띠별 운세', item: new URL('/zodiac/', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: `${sign.name} 오늘 운세`, item: Astro.url.href }
+    ]
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((x) => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } }))
+  }
+];
 ---
 <BaseLayout title={`${sign.name} 오늘 운세: 관계·재물·일·컨디션 | 오늘운`} description={`${sign.name}의 오늘 운세와 대표 성향을 확인하세요. ${sign.keywords.join(', ')}을 바탕으로 관계, 일·공부, 재물, 컨디션과 오늘의 행동을 제공합니다.`} jsonLd={jsonLd} adFitPage={true}>
-<div class="shell" style="padding-top:1.4rem"><nav class="breadcrumb"><a href="/">홈</a><span>›</span><a href="/zodiac/">띠별 운세</a><span>›</span><span>{sign.name}</span></nav><section class="profile-hero"><div class="profile-symbol" aria-hidden="true">{sign.emoji}</div><div><span class="eyebrow">12띠 · {sign.period}</span><h1>{sign.name} 오늘 운세</h1><p>{sign.summary}</p><div class="keyword-chips">{sign.keywords.map(x=><span>{x}</span>)}</div></div></section><div class="profile-grid"><section class="profile-card"><span>강점</span><p>{sign.strength}</p></section><section class="profile-card"><span>균형을 위한 관점</span><p>{sign.caution}</p></section></div><FortuneApp fixedType="zodiac" fixedSlug={sign.slug} title={`${sign.name} 오늘의 흐름`} description="같은 날짜에는 모든 방문자에게 동일한 결과가 표시됩니다." adPlacement="profile.afterResult" nextLinks="profile" /></div>
-<section class="section"><div class="shell profile-life-layout"><div class="profile-life-main"><div class="section-head"><div><h2>{sign.name} 성향을 생활에 적용하기</h2><p>띠의 상징을 고정된 성격 진단이 아니라 자신을 돌아보는 질문으로 사용하세요.</p></div></div><div class="grid grid-2"><article class="card"><h3>관계</h3><p>{sign.relationship}</p></article><article class="card"><h3>일과 공부</h3><p>{sign.work}</p></article><article class="card"><h3>재물 습관</h3><p>{sign.money}</p></article><article class="card"><h3>컨디션</h3><p>{sign.condition}</p></article></div><AdFitSlot placement="profile.afterLife" className="adfit-slot--after-life" /></div><AdFitSlot placement="profile.side" className="adfit-slot--profile-side" /></div></section>
-<section class="section soft"><div class="shell"><div class="section-head"><div><h2>함께 볼 띠</h2></div></div><div class="grid grid-3">{related.map(item=><SignCard sign={item} tracking="related"/>)}</div><div style="margin-top:1.2rem">{faqs.map(x=><details><summary>{x.q}</summary><p>{x.a}</p></details>)}</div></div></section>
+  <div class="shell" style="padding-top:1.4rem">
+    <nav class="breadcrumb"><a href="/">홈</a><span>›</span><a href="/zodiac/">띠별 운세</a><span>›</span><span>{sign.name}</span></nav>
+    <section class="profile-hero">
+      <div class="profile-symbol" aria-hidden="true">{sign.emoji}</div>
+      <div>
+        <span class="eyebrow">12띠 · {sign.period}</span>
+        <h1>{sign.name} 오늘 운세</h1>
+        <p>{sign.summary}</p>
+        <div class="keyword-chips">{sign.keywords.map((x) => <span>{x}</span>)}</div>
+      </div>
+    </section>
+    <div class="profile-grid">
+      <section class="profile-card"><span>강점</span><p>{sign.strength}</p></section>
+      <section class="profile-card"><span>균형을 위한 관점</span><p>{sign.caution}</p></section>
+    </div>
+    <FortuneApp fixedType="zodiac" fixedSlug={sign.slug} title={`${sign.name} 오늘의 흐름`} description="같은 날짜에는 모든 방문자에게 동일한 결과가 표시됩니다." adPlacement="profile.afterResult" nextLinks="profile" />
+  </div>
+  <section class="section">
+    <div class="shell profile-life-main">
+      <div class="section-head">
+        <div>
+          <h2>{sign.name} 성향을 생활에 적용하기</h2>
+          <p>띠의 상징을 고정된 성격 진단이 아니라 자신을 돌아보는 질문으로 사용하세요.</p>
+        </div>
+      </div>
+      <div class="grid grid-2 profile-life-grid">
+        <article class="card"><h3>관계</h3><p>{sign.relationship}</p></article>
+        <article class="card"><h3>일과 공부</h3><p>{sign.work}</p></article>
+      </div>
+      <AdFitSlot placement="profile.midLife" className="adfit-slot--mid-life" />
+      <div class="grid grid-2 profile-life-grid">
+        <article class="card"><h3>재물 습관</h3><p>{sign.money}</p></article>
+        <article class="card"><h3>컨디션</h3><p>{sign.condition}</p></article>
+      </div>
+    </div>
+  </section>
+  <section class="section soft">
+    <div class="shell">
+      <div class="section-head"><div><h2>함께 볼 띠</h2></div></div>
+      <div class="grid grid-3">{related.map((item) => <SignCard sign={item} tracking="related" />)}</div>
+      <div style="margin-top:1.2rem">{faqs.map((x) => <details><summary>{x.q}</summary><p>{x.a}</p></details>)}</div>
+    </div>
+  </section>
 </BaseLayout>

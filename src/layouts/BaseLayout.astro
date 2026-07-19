@@ -4,9 +4,7 @@ import Footer from '../components/Footer.astro';
 import {
   adFitScriptSrc as adFitSdkSrc,
   getAdFitAllowedHosts,
-  isAdFitDesktopSideRailEnabled,
-  isAdFitEnabled,
-  isAdFitProfileThirdEnabled
+  isAdFitEnabled
 } from '../adfit';
 import { siteConfig } from '../config';
 import '../styles/global.css';
@@ -44,8 +42,6 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
 const adFitEnabled = isAdFitEnabled() && adFitPage;
 const adFitScriptSrc = adFitEnabled ? adFitSdkSrc : '';
 const adFitAllowedHosts = getAdFitAllowedHosts();
-const adFitProfileThirdEnabled = isAdFitProfileThirdEnabled();
-const adFitDesktopSideRailEnabled = isAdFitDesktopSideRailEnabled();
 const structured = [
   {
     '@context': 'https://schema.org',
@@ -75,8 +71,6 @@ const structured = [
   lang="ko"
   data-adfit-enabled={adFitEnabled ? 'true' : 'false'}
   data-adfit-allowed-hosts={adFitAllowedHosts}
-  data-adfit-profile-third-enabled={adFitProfileThirdEnabled ? 'true' : 'false'}
-  data-adfit-desktop-side-rail-enabled={adFitDesktopSideRailEnabled ? 'true' : 'false'}
   data-adfit-script-src={adFitScriptSrc}
 >
   <head>
