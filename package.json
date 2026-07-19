@@ -1,0 +1,20 @@
+{
+  "name": "daily-fortune",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run prepare:data && astro dev",
+    "prepare:data": "node scripts/prepare-data.mjs",
+    "validate": "node scripts/validate-content.mjs",
+    "build": "npm run validate && npm run prepare:data && astro build && node scripts/generate-sw.mjs",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.3",
+    "astro": "7.0.9"
+  },
+  "engines": {
+    "node": ">=22.12.0 <25.0.0"
+  }
+}

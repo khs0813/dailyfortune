@@ -1,0 +1,6 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';import SignCard from '../../components/SignCard.astro';import signs from '../../data/signs.json';const items=signs.filter(x=>x.type==='horoscope');
+---
+<BaseLayout title="12별자리 오늘 운세 전체와 생일 구간 | 오늘운" description="양자리부터 물고기자리까지 12별자리의 생일 구간, 대표 성향과 오늘의 관계·일·재물·컨디션 운세를 확인하세요.">
+<header class="page-head"><div class="shell"><nav class="breadcrumb"><a href="/">홈</a><span>›</span><span>별자리 운세</span></nav><span class="eyebrow">생일 구간으로 찾기</span><h1>12별자리 오늘 운세</h1><p>일반적으로 사용하는 태양 별자리 날짜 구간을 기준으로 정리했습니다. 경계 날짜는 연도와 계산 방식에 따라 달라질 수 있으므로 참고용으로 사용하세요.</p></div></header><section class="section"><div class="shell"><div class="grid grid-3">{items.map(sign=><SignCard sign={sign}/>)}</div></div></section><section class="section soft"><div class="shell"><article class="card"><h2>내 별자리를 찾는 방법</h2><p>아래 각 카드에 표시된 일반적인 생일 구간을 확인하세요. 태어난 시간과 장소를 반영하는 정밀 점성술 차트는 제공하지 않으며, 이 사이트는 간단한 태양 별자리 콘텐츠입니다.</p><a class="text-link" href="/guide/zodiac-horoscope/">자세한 안내 →</a></article></div></section>
+</BaseLayout>

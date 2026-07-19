@@ -1,0 +1,48 @@
+---
+import signs from '../data/signs.json';
+const { period = 'daily', fixedType = '', fixedSlug = '', title = '오늘의 운세', description = '띠 또는 별자리를 선택하면 오늘의 흐름을 바로 확인할 수 있습니다.', compact = false } = Astro.props;
+const zodiac = signs.filter((item)=>item.type==='zodiac');
+const horoscope = signs.filter((item)=>item.type==='horoscope');
+---
+<section class:list={['fortune-app',{compact}]} data-fortune-app data-period={period} data-fixed-type={fixedType} data-fixed-slug={fixedSlug}>
+  <div class="fortune-app-head">
+    <div><span class="eyebrow" data-period-label>{period === 'daily' ? '오늘' : period === 'weekly' ? '이번 주' : '이번 달'}</span><h2>{title}</h2><p>{description}</p></div>
+    <div class="visit-badge" title="현재 브라우저에 저장된 연속 방문 기록"><span aria-hidden="true">🔥</span><strong data-streak>0</strong><small>일 연속</small></div>
+  </div>
+  {!fixedSlug && (
+    <div class="profile-picker">
+      <div class="type-tabs" role="tablist" aria-label="운세 종류">
+        <button type="button" role="tab" aria-selected="true" data-type-tab="zodiac">띠별 운세</button>
+        <button type="button" role="tab" aria-selected="false" data-type-tab="horoscope">별자리 운세</button>
+      </div>
+      <div class="picker-row">
+        <label class="sr-only" for={`sign-select-${period}`}>띠 또는 별자리 선택</label>
+        <select id={`sign-select-${period}`} data-sign-select>
+          <optgroup label="띠별 운세">{zodiac.map((sign)=><option value={`zodiac:${sign.slug}`}>{sign.emoji} {sign.name}</option>)}</optgroup>
+          <optgroup label="별자리 운세">{horoscope.map((sign)=><option value={`horoscope:${sign.slug}`}>{sign.emoji} {sign.name} · {sign.period}</option>)}</optgroup>
+        </select>
+        <button class="button secondary" type="button" data-save-profile>내 프로필 저장</button>
+      </div>
+      <div class="saved-profiles" data-saved-profiles aria-label="저장한 프로필"></div>
+    </div>
+  )}
+  <div class="history-row" data-history hidden aria-label="최근 7일 운세"></div>
+  <article class="fortune-result" data-result aria-live="polite">
+    <header class="result-hero">
+      <div class="result-sign" data-result-icon aria-hidden="true">✨</div>
+      <div class="result-copy"><span data-result-date>오늘</span><h3 data-result-title>운세를 준비하고 있습니다</h3><p data-result-overall>잠시 후 결과가 표시됩니다.</p><div class="keyword-row"><span>오늘의 키워드</span><strong data-result-keyword>준비</strong></div></div>
+      <div class="score-orbit" aria-label="종합 흐름 점수"><strong data-result-score>0</strong><span>/ 5</span></div>
+    </header>
+    <div class="fortune-grid">
+      <section class="fortune-metric" data-metric="relationship"><div class="metric-head"><span>💞 관계</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+      <section class="fortune-metric" data-metric="work"><div class="metric-head"><span>📚 일·공부</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+      <section class="fortune-metric" data-metric="money"><div class="metric-head"><span>🪙 재물</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+      <section class="fortune-metric" data-metric="condition"><div class="metric-head"><span>🌿 컨디션</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+    </div>
+    <div class="lucky-strip"><div><span>행운 색상</span><strong data-color>-</strong></div><div><span>행운 숫자</span><strong data-number>-</strong></div><div><span>집중 시간</span><strong data-time>-</strong></div><div><span>방향</span><strong data-direction>-</strong></div></div>
+    <div class="action-grid"><section><span class="mini-label good">오늘 해볼 일</span><strong data-action>-</strong></section><section><span class="mini-label caution">조심할 흐름</span><strong data-caution>-</strong></section></div>
+    <div class="result-footer"><p><span data-countdown-label>내일 운세까지</span> <strong data-countdown>--:--:--</strong></p><div class="button-row"><button class="button primary" type="button" data-share-result>결과 공유</button>{!fixedSlug && <a class="button secondary" data-detail-link href="/today/">상세 페이지</a>}<button class="button ghost" type="button" data-install hidden>홈 화면에 추가</button></div></div>
+  </article>
+  <p class="fortune-disclaimer">운세는 재미와 자기성찰을 위한 콘텐츠입니다. 건강 증상, 투자, 계약, 법률 문제와 중요한 관계 결정은 확인 가능한 정보와 전문가 조언을 기준으로 하세요.</p>
+</section>
+<script type="module" src="/js/fortune-widget.js"></script>

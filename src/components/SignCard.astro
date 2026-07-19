@@ -1,0 +1,9 @@
+---
+const { sign } = Astro.props;
+const href = sign.type === 'zodiac' ? `/zodiac/${sign.slug}/` : `/horoscope/${sign.slug}/`;
+---
+<a class="sign-card" href={href}>
+  <span class="sign-icon" aria-hidden="true">{sign.emoji}</span>
+  <span class="sign-card-body"><span>{sign.period}</span><strong>{sign.name}</strong><small>{sign.keywords.join(' · ')}</small></span>
+  <span aria-hidden="true">→</span>
+</a>

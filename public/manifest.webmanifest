@@ -1,0 +1,48 @@
+{
+  "name": "오늘운 - 띠별·별자리 오늘 운세",
+  "short_name": "오늘운",
+  "description": "매일 바뀌는 띠별 운세와 별자리 운세를 확인합니다.",
+  "start_url": "/today/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fffaf7",
+  "theme_color": "#d34c46",
+  "lang": "ko-KR",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "오늘 운세",
+      "short_name": "오늘",
+      "url": "/today/"
+    },
+    {
+      "name": "띠별 운세",
+      "short_name": "띠",
+      "url": "/zodiac/"
+    },
+    {
+      "name": "별자리 운세",
+      "short_name": "별자리",
+      "url": "/horoscope/"
+    },
+    {
+      "name": "이번 주 운세",
+      "short_name": "주간",
+      "url": "/weekly/"
+    }
+  ]
+}
