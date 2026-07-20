@@ -43,6 +43,26 @@ const recordVisit = () => {
 };
 
 const periodNames = { daily: '오늘', weekly: '이번 주', monthly: '이번 달' };
+const requiredCategoryKeys = ['relationship', 'work', 'money', 'condition'];
+const hasText = (value) => typeof value === 'string' && value.trim().length > 0;
+const isCompleteFortuneResult = (result) => {
+  if (!result || !result.sign || !hasText(result.sign.name) || !hasText(result.sign.emoji)) return false;
+  if (!hasText(result.overall) || !hasText(result.keyword)) return false;
+  if (!Number.isFinite(Number(result.overallScore))) return false;
+  if (!hasText(result.color) || !Number.isFinite(Number(result.number))) return false;
+  if (!hasText(result.time) || !hasText(result.direction)) return false;
+  if (!hasText(result.action) || !hasText(result.caution)) return false;
+
+  return requiredCategoryKeys.every((key) => {
+    const item = result.categories?.[key];
+    return item && Number.isFinite(Number(item.score)) && hasText(item.message) && hasText(item.insight);
+  });
+};
+const showResultReadyContent = (root) => {
+  root.querySelectorAll('[data-result-ready-content][hidden]').forEach((node) => {
+    node.hidden = false;
+  });
+};
 const setScoreProgress = (meter, score) => {
   if (!meter) return;
   const max = Number(meter.dataset.scoreMax) || 5;
@@ -117,7 +137,7 @@ for (const root of document.querySelectorAll('[data-fortune-app]')) {
         activeOffset = 0;
         syncPicker();
         renderSaved();
-        render();
+        render().catch(showResultError);
       });
       box.append(button);
     }
@@ -141,14 +161,26 @@ for (const root of document.querySelectorAll('[data-fortune-app]')) {
       button.addEventListener('click', () => {
         activeOffset = offset;
         renderHistory();
-        render();
+        render().catch(showResultError);
       });
       history.append(button);
     }
   };
 
+  const showResultError = () => {
+    root.dataset.resultReady = 'false';
+    root.querySelector('[data-result-title]').textContent = '운세를 불러오지 못했습니다';
+    root.querySelector('[data-result-overall]').textContent = '운세 데이터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.';
+    root.querySelector('[data-result-keyword]').textContent = '오류';
+  };
+
   const render = async () => {
     const result = await generateFortune(activeType, activeSlug, period, activeOffset);
+    if (!isCompleteFortuneResult(result)) {
+      showResultError();
+      return;
+    }
+
     const sign = result.sign;
     root.querySelector('[data-result-icon]').textContent = sign.emoji;
     root.querySelector('[data-result-date]').textContent = formatKstDate(result.date, period);
@@ -158,7 +190,14 @@ for (const root of document.querySelectorAll('[data-fortune-app]')) {
     setScoreProgress(root.querySelector('[data-result-score-meter]'), result.overallScore);
 
     for (const [key, data] of Object.entries(result.categories)) {
+      const summary = root.querySelector(`[data-summary-metric="${key}"]`);
+      if (summary) {
+        summary.querySelector('[data-summary-score]').textContent = `${data.score}/5`;
+        summary.style.setProperty('--summary-score', `${data.score * 20}%`);
+      }
+
       const card = root.querySelector(`[data-metric="${key}"]`);
+      if (!card) continue;
       card.querySelector('[data-score]').textContent = `${data.score}/5`;
       card.querySelector('[data-message]').textContent = data.message;
       card.querySelector('[data-insight]').textContent = `${sign.name} 힌트 · ${data.insight}`;
@@ -188,6 +227,7 @@ ${location.origin}${detailHref(sign)}`;
       profile_slug: sign.slug
     };
     root.dataset.resultReady = 'true';
+    showResultReadyContent(root);
     track('fortune_result_rendered', eventDetail);
     root.dispatchEvent(new CustomEvent('fortune:result-rendered', { bubbles: true, detail: eventDetail }));
   };
@@ -199,7 +239,7 @@ ${location.origin}${detailHref(sign)}`;
     syncPicker();
     renderSaved();
     renderHistory();
-    render();
+    render().catch(showResultError);
   }));
 
   select?.addEventListener('change', () => {
@@ -208,7 +248,7 @@ ${location.origin}${detailHref(sign)}`;
     syncPicker();
     renderSaved();
     renderHistory();
-    render();
+    render().catch(showResultError);
   });
 
   root.querySelector('[data-save-profile]')?.addEventListener('click', () => {
@@ -263,6 +303,6 @@ ${location.origin}${detailHref(sign)}`;
     renderHistory();
     await render();
   } catch {
-    root.querySelector('[data-result-overall]').textContent = '운세 데이터를 불러오지 못했습니다. 페이지를 새로고침해 주세요.';
+    showResultError();
   }
 }

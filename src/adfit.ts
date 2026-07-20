@@ -1,10 +1,10 @@
 export type AdFitPlacement =
-  | 'home.afterResult'
+  | 'home.afterSummary'
   | 'home.betweenDirectories'
-  | 'today.afterResult'
-  | 'weekly.afterResult'
-  | 'monthly.afterResult'
-  | 'profile.afterResult'
+  | 'today.afterSummary'
+  | 'weekly.afterSummary'
+  | 'monthly.afterSummary'
+  | 'profile.afterSummary'
   | 'profile.midLife'
   | 'directory.mid';
 
@@ -28,29 +28,29 @@ const readEnv = (key: string) => String(env[key] ?? '').trim();
 const publicKey = (key: string) => `PUBLIC_${key}`;
 
 const definitions: Record<AdFitPlacement, PlacementDefinition> = {
-  'home.afterResult': {
-    mobile: { envKey: publicKey('ADFIT_HOME_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_HOME_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
+  'home.afterSummary': {
+    mobile: { envKey: publicKey('ADFIT_HOME_AFTER_SUMMARY_M_320X100'), width: 320, height: 100 },
+    desktop: { envKey: publicKey('ADFIT_HOME_AFTER_SUMMARY_D_728X90'), width: 728, height: 90 }
   },
   'home.betweenDirectories': {
     mobile: { envKey: publicKey('ADFIT_HOME_BETWEEN_DIRECTORIES_M_300X250'), width: 300, height: 250 },
     desktop: { envKey: publicKey('ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90'), width: 728, height: 90 }
   },
-  'today.afterResult': {
-    mobile: { envKey: publicKey('ADFIT_TODAY_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_TODAY_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
+  'today.afterSummary': {
+    mobile: { envKey: publicKey('ADFIT_TODAY_AFTER_SUMMARY_M_320X100'), width: 320, height: 100 },
+    desktop: { envKey: publicKey('ADFIT_TODAY_AFTER_SUMMARY_D_728X90'), width: 728, height: 90 }
   },
-  'weekly.afterResult': {
-    mobile: { envKey: publicKey('ADFIT_WEEKLY_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_WEEKLY_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
+  'weekly.afterSummary': {
+    mobile: { envKey: publicKey('ADFIT_WEEKLY_AFTER_SUMMARY_M_320X100'), width: 320, height: 100 },
+    desktop: { envKey: publicKey('ADFIT_WEEKLY_AFTER_SUMMARY_D_728X90'), width: 728, height: 90 }
   },
-  'monthly.afterResult': {
-    mobile: { envKey: publicKey('ADFIT_MONTHLY_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_MONTHLY_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
+  'monthly.afterSummary': {
+    mobile: { envKey: publicKey('ADFIT_MONTHLY_AFTER_SUMMARY_M_320X100'), width: 320, height: 100 },
+    desktop: { envKey: publicKey('ADFIT_MONTHLY_AFTER_SUMMARY_D_728X90'), width: 728, height: 90 }
   },
-  'profile.afterResult': {
-    mobile: { envKey: publicKey('ADFIT_PROFILE_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_PROFILE_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
+  'profile.afterSummary': {
+    mobile: { envKey: publicKey('ADFIT_PROFILE_AFTER_SUMMARY_M_320X100'), width: 320, height: 100 },
+    desktop: { envKey: publicKey('ADFIT_PROFILE_AFTER_SUMMARY_D_728X90'), width: 728, height: 90 }
   },
   'profile.midLife': {
     mobile: { envKey: publicKey('ADFIT_PROFILE_MID_LIFE_M_300X250'), width: 300, height: 250 },

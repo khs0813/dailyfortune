@@ -218,6 +218,12 @@
       node.hidden = false;
     });
   };
+  const showResultAds = (root) => {
+    root.querySelectorAll('[data-result-ready-ad][hidden]').forEach((node) => {
+      const slot = node.querySelector('[data-adfit-slot]');
+      if (slot && chooseVariant(slot)?.unit) node.hidden = false;
+    });
+  };
 
   const hasResultDependentSlot = () =>
     Boolean(document.querySelector('[data-adfit-slot][data-adfit-requires-result="true"]'));
@@ -226,12 +232,16 @@
     const apps = [...document.querySelectorAll('[data-fortune-app]')];
     if (!apps.length || apps.some((app) => app.dataset.resultReady !== 'true')) return;
     apps.forEach(showResultContent);
+    apps.forEach(showResultAds);
     bootstrap();
   };
 
   document.addEventListener('fortune:result-rendered', (event) => {
     const root = event.target;
-    if (root instanceof Element) showResultContent(root);
+    if (root instanceof Element) {
+      showResultContent(root);
+      showResultAds(root);
+    }
     if (hasResultDependentSlot()) bootstrapReadyResultPage();
   });
 

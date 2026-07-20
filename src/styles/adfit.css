@@ -1,12 +1,79 @@
-.result-followup {
-  margin-top: 56px;
-  display: grid;
-  gap: 56px;
-}
-
 html,
 body {
   overflow-x: hidden;
+}
+
+.fortune-result-stack {
+  display: grid;
+}
+
+.quick-fortune-summary,
+.fortune-details {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 25px;
+  background: #fff;
+}
+
+.quick-score-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .65rem;
+  padding: 0 1rem 1rem;
+}
+
+.quick-score-card {
+  position: relative;
+  min-width: 0;
+  padding: .78rem .85rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: linear-gradient(180deg, #fff, #fffaf7);
+}
+
+.quick-score-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: var(--summary-score, 0%);
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--brand));
+}
+
+.quick-score-card span,
+.quick-score-card b {
+  display: block;
+}
+
+.quick-score-card span {
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 950;
+}
+
+.quick-score-card b {
+  margin-top: .15rem;
+  color: var(--brand-deep);
+  font-size: 1.08rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.result-ad-break {
+  display: grid;
+  justify-items: center;
+  margin: 56px 0;
+}
+
+.result-next-flow {
+  margin-top: 56px;
+}
+
+.fortune-result-stack > .result-footer {
+  margin-top: .8rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
 }
 
 .adfit-slot {
@@ -97,12 +164,14 @@ body {
 }
 
 .adfit-slot--between-sections {
-  margin-top: 48px;
-  margin-bottom: 48px;
+  margin-top: 56px;
+  margin-bottom: 56px;
 }
 
 .directory-ad-break {
-  margin: 44px 0;
+  display: grid;
+  justify-items: center;
+  margin: 56px 0;
 }
 
 .adfit-slot--directory-mid,
@@ -111,7 +180,7 @@ body {
   margin-bottom: 0;
 }
 
-.adfit-slot--after-result {
+.adfit-slot--after-summary {
   margin-top: 0;
 }
 
@@ -139,21 +208,38 @@ body {
   gap: .55rem;
 }
 
+@media (max-width: 900px) {
+  .result-ad-break,
+  .directory-ad-break {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+}
+
 @media (max-width: 700px) {
   body {
     padding-bottom: calc(7rem + env(safe-area-inset-bottom));
   }
 
-  .result-followup {
-    margin-top: 56px;
-    gap: 56px;
+  .quick-score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .55rem;
+    padding: 0 .65rem .65rem;
+  }
+
+  .quick-score-card {
+    padding: .66rem .7rem;
   }
 
   .adfit-slot {
     max-width: 100vw;
   }
 
-  .fortune-grid,
+  .fortune-details-grid {
+    grid-template-columns: 1fr;
+  }
+
   .lucky-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: .55rem;

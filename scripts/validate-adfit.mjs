@@ -12,18 +12,18 @@ const count = (text, pattern) => (text.match(new RegExp(pattern, 'g')) || []).le
 const requiredEnvKeys = [
   'PUBLIC_ADFIT_ENABLED',
   'PUBLIC_ADFIT_ALLOWED_HOSTS',
-  'PUBLIC_ADFIT_HOME_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_HOME_AFTER_SUMMARY_M_320X100',
+  'PUBLIC_ADFIT_HOME_AFTER_SUMMARY_D_728X90',
   'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_M_300X250',
   'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90',
-  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_TODAY_AFTER_SUMMARY_M_320X100',
+  'PUBLIC_ADFIT_TODAY_AFTER_SUMMARY_D_728X90',
+  'PUBLIC_ADFIT_WEEKLY_AFTER_SUMMARY_M_320X100',
+  'PUBLIC_ADFIT_WEEKLY_AFTER_SUMMARY_D_728X90',
+  'PUBLIC_ADFIT_MONTHLY_AFTER_SUMMARY_M_320X100',
+  'PUBLIC_ADFIT_MONTHLY_AFTER_SUMMARY_D_728X90',
+  'PUBLIC_ADFIT_PROFILE_AFTER_SUMMARY_M_320X100',
+  'PUBLIC_ADFIT_PROFILE_AFTER_SUMMARY_D_728X90',
   'PUBLIC_ADFIT_PROFILE_MID_LIFE_M_300X250',
   'PUBLIC_ADFIT_PROFILE_MID_LIFE_D_300X250',
   'PUBLIC_ADFIT_DIRECTORY_MID_M_320X100',
@@ -31,14 +31,14 @@ const requiredEnvKeys = [
 ];
 
 const sourceChecks = [
-  ['src/pages/index.astro', { 'home.afterResult': 1, 'home.betweenDirectories': 1 }],
-  ['src/pages/today.astro', { 'today.afterResult': 1 }],
-  ['src/pages/weekly.astro', { 'weekly.afterResult': 1 }],
-  ['src/pages/monthly.astro', { 'monthly.afterResult': 1 }],
+  ['src/pages/index.astro', { 'home.afterSummary': 1, 'home.betweenDirectories': 1 }],
+  ['src/pages/today.astro', { 'today.afterSummary': 1 }],
+  ['src/pages/weekly.astro', { 'weekly.afterSummary': 1 }],
+  ['src/pages/monthly.astro', { 'monthly.afterSummary': 1 }],
   ['src/pages/zodiac/index.astro', { 'directory.mid': 1 }],
   ['src/pages/horoscope/index.astro', { 'directory.mid': 1 }],
-  ['src/pages/zodiac/[slug].astro', { 'profile.afterResult': 1, 'profile.midLife': 1 }],
-  ['src/pages/horoscope/[slug].astro', { 'profile.afterResult': 1, 'profile.midLife': 1 }]
+  ['src/pages/zodiac/[slug].astro', { 'profile.afterSummary': 1, 'profile.midLife': 1 }],
+  ['src/pages/horoscope/[slug].astro', { 'profile.afterSummary': 1, 'profile.midLife': 1 }]
 ];
 
 for (const [path, placements] of sourceChecks) {
@@ -85,11 +85,48 @@ if (!adfitClient.includes('fortune:result-rendered')) fail('AdFit client must wa
 if (!adfitClient.includes('ad_slot_mounted')) fail('AdFit slot mounted visibility analytics event is missing');
 if (!adfitClient.includes('ad_slot_viewport_entered')) fail('AdFit viewport entered analytics event is missing');
 if (!adfitClient.includes('ad_slot_viewport_50_1s')) fail('AdFit 50 percent viewport analytics event is missing');
+if (!adfitClient.includes('data-result-ready-ad')) fail('AdFit client must reveal result-dependent ad wrappers only after results are ready');
 if (!fortuneWidget.includes('fortune:result-rendered')) fail('Fortune results must dispatch fortune:result-rendered');
 if (!fortuneWidget.includes('fortune_result_rendered')) fail('Fortune result analytics event is missing');
 if (!fortuneWidget.includes('dataset.resultReady')) fail('Fortune result readiness state is missing');
+if (!fortuneWidget.includes('isCompleteFortuneResult')) fail('Fortune results must validate non-empty result data before ads can mount');
+
+const fortuneApp = await read('src/components/FortuneApp.astro');
+for (const marker of [
+  'quick-fortune-summary',
+  'quick-score-grid',
+  'data-result-ready-ad',
+  'fortune-details',
+  'result-footer',
+  'fortune-disclaimer',
+  'result-next-flow'
+]) {
+  if (!fortuneApp.includes(marker)) fail(`FortuneApp missing ${marker}`);
+}
+const fortuneOrder = [
+  'quick-fortune-summary',
+  'data-result-ready-ad',
+  'fortune-details',
+  'result-footer',
+  'fortune-disclaimer',
+  'result-next-flow'
+].map((marker) => fortuneApp.indexOf(marker));
+if (fortuneOrder.some((index) => index < 0) || fortuneOrder.some((index, i) => i > 0 && index <= fortuneOrder[i - 1])) {
+  fail('FortuneApp must order summary, afterSummary ad, details, buttons, disclaimer, and next links');
+}
+if (fortuneApp.includes('adfit-slot--after-result')) fail('FortuneApp still uses afterResult slot styling');
 
 for (const removed of [
+  'PUBLIC_ADFIT_HOME_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_D_728X90',
   'PUBLIC_ADFIT_PROFILE_THIRD_ENABLED',
   'PUBLIC_ADFIT_DESKTOP_SIDE_RAIL_ENABLED',
   'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_300X250',

@@ -36,12 +36,12 @@ Localhost, `127.0.0.1`, `onrender.com` preview hosts, unlisted hosts, test mode,
 
 | Placement | Position | Mobile | Desktop |
 | --- | --- | --- | --- |
-| `home.afterResult` | Home fortune result, actions, disclaimer, then 56px spacing before the ad and 56px before next links | 320x100 | 728x90 |
+| `home.afterSummary` | Home fortune summary, then 56px spacing before the ad and 56px before fortune details | 320x100 | 728x90 |
 | `home.betweenDirectories` | After all 12 zodiac cards, before horoscope cards | 300x250 | 728x90 |
-| `today.afterResult` | `/today/` result, actions, disclaimer, then next-fortune links below the ad | 320x100 | 728x90 |
-| `weekly.afterResult` | `/weekly/` result, actions, disclaimer, then today/month/profile links below the ad | 320x100 | 728x90 |
-| `monthly.afterResult` | `/monthly/` result, actions, disclaimer, then today/week/profile links below the ad | 320x100 | 728x90 |
-| `profile.afterResult` | Profile intro and today result, then actions/disclaimer/ad before follow-up links and life content | 320x100 | 728x90 |
+| `today.afterSummary` | `/today/` summary, then ad, then fortune details, actions, disclaimer, and next-fortune links | 320x100 | 728x90 |
+| `weekly.afterSummary` | `/weekly/` summary, then ad, then fortune details, actions, disclaimer, and next-fortune links | 320x100 | 728x90 |
+| `monthly.afterSummary` | `/monthly/` summary, then ad, then fortune details, actions, disclaimer, and next-fortune links | 320x100 | 728x90 |
+| `profile.afterSummary` | Profile today summary, then ad, then fortune details, actions, disclaimer, follow-up links, and life content | 320x100 | 728x90 |
 | `profile.midLife` | After relationship and work/study, before money habit and condition | 300x250 | 300x250 |
 | `directory.mid` | `/zodiac/` and `/horoscope/` between the first 6 cards and second 6 cards | 320x100 | 728x90 |
 
@@ -56,18 +56,18 @@ Required controls:
 
 Ad unit IDs:
 
-- `PUBLIC_ADFIT_HOME_AFTER_RESULT_M_320X100`
-- `PUBLIC_ADFIT_HOME_AFTER_RESULT_D_728X90`
+- `PUBLIC_ADFIT_HOME_AFTER_SUMMARY_M_320X100`
+- `PUBLIC_ADFIT_HOME_AFTER_SUMMARY_D_728X90`
 - `PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_M_300X250`
 - `PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90`
-- `PUBLIC_ADFIT_TODAY_AFTER_RESULT_M_320X100`
-- `PUBLIC_ADFIT_TODAY_AFTER_RESULT_D_728X90`
-- `PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_M_320X100`
-- `PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_D_728X90`
-- `PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_M_320X100`
-- `PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_D_728X90`
-- `PUBLIC_ADFIT_PROFILE_AFTER_RESULT_M_320X100`
-- `PUBLIC_ADFIT_PROFILE_AFTER_RESULT_D_728X90`
+- `PUBLIC_ADFIT_TODAY_AFTER_SUMMARY_M_320X100`
+- `PUBLIC_ADFIT_TODAY_AFTER_SUMMARY_D_728X90`
+- `PUBLIC_ADFIT_WEEKLY_AFTER_SUMMARY_M_320X100`
+- `PUBLIC_ADFIT_WEEKLY_AFTER_SUMMARY_D_728X90`
+- `PUBLIC_ADFIT_MONTHLY_AFTER_SUMMARY_M_320X100`
+- `PUBLIC_ADFIT_MONTHLY_AFTER_SUMMARY_D_728X90`
+- `PUBLIC_ADFIT_PROFILE_AFTER_SUMMARY_M_320X100`
+- `PUBLIC_ADFIT_PROFILE_AFTER_SUMMARY_D_728X90`
 - `PUBLIC_ADFIT_PROFILE_MID_LIFE_M_300X250`
 - `PUBLIC_ADFIT_PROFILE_MID_LIFE_D_300X250`
 - `PUBLIC_ADFIT_DIRECTORY_MID_M_320X100`
@@ -83,18 +83,18 @@ fortunedaily.co.kr,www.fortunedaily.co.kr
 
 Create AdFit units with these names:
 
-- `fd_home_after_result_m_320x100_v1`
-- `fd_home_after_result_d_728x90_v1`
+- `fd_home_after_summary_m_320x100_v1`
+- `fd_home_after_summary_d_728x90_v1`
 - `fd_home_between_directories_m_300x250_v1`
 - `fd_home_between_directories_d_728x90_v1`
-- `fd_today_after_result_m_320x100_v1`
-- `fd_today_after_result_d_728x90_v1`
-- `fd_weekly_after_result_m_320x100_v1`
-- `fd_weekly_after_result_d_728x90_v1`
-- `fd_monthly_after_result_m_320x100_v1`
-- `fd_monthly_after_result_d_728x90_v1`
-- `fd_profile_after_result_m_320x100_v1`
-- `fd_profile_after_result_d_728x90_v1`
+- `fd_today_after_summary_m_320x100_v1`
+- `fd_today_after_summary_d_728x90_v1`
+- `fd_weekly_after_summary_m_320x100_v1`
+- `fd_weekly_after_summary_d_728x90_v1`
+- `fd_monthly_after_summary_m_320x100_v1`
+- `fd_monthly_after_summary_d_728x90_v1`
+- `fd_profile_after_summary_m_320x100_v1`
+- `fd_profile_after_summary_d_728x90_v1`
 - `fd_profile_mid_life_m_300x250_v1`
 - `fd_profile_mid_life_d_300x250_v1`
 - `fd_directory_mid_m_320x100_v1`

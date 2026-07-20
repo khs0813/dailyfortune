@@ -60,26 +60,40 @@ const horoscope = signs.filter((item)=>item.type==='horoscope');
     </div>
   )}
   <div class="history-row" data-history hidden aria-label="최근 7일 운세"></div>
-  <article class="fortune-result" data-result aria-live="polite">
-    <header class="result-hero">
-      <div class="result-sign" data-result-icon aria-hidden="true">✨</div>
-      <div class="result-copy"><span data-result-date>{periodCopy.date}</span><h3 data-result-title>운세를 준비하고 있습니다</h3><p data-result-overall>잠시 후 결과가 표시됩니다.</p><div class="keyword-row"><span>{periodCopy.keyword}</span><strong data-result-keyword>준비</strong></div></div>
-      <ScoreProgress />
-    </header>
-    <div class="fortune-grid">
-      <section class="fortune-metric" data-metric="relationship"><div class="metric-head"><span>💞 관계</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
-      <section class="fortune-metric" data-metric="work"><div class="metric-head"><span>📚 일·공부</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
-      <section class="fortune-metric" data-metric="money"><div class="metric-head"><span>🪙 재물</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
-      <section class="fortune-metric" data-metric="condition"><div class="metric-head"><span>🌿 컨디션</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
-    </div>
-    <div class="lucky-strip"><div><span>행운 색상</span><strong data-color>-</strong></div><div><span>행운 숫자</span><strong data-number>-</strong></div><div><span>집중 시간</span><strong data-time>-</strong></div><div><span>방향</span><strong data-direction>-</strong></div></div>
-    <div class="action-grid"><section><span class="mini-label good">오늘 해볼 일</span><strong data-action>-</strong></section><section><span class="mini-label caution">조심할 흐름</span><strong data-caution>-</strong></section></div>
+  <div class="fortune-result-stack" data-result aria-live="polite">
+    <article class="quick-fortune-summary" aria-label="핵심 운세 요약">
+      <header class="result-hero">
+        <div class="result-sign" data-result-icon aria-hidden="true">✨</div>
+        <div class="result-copy"><span data-result-date>{periodCopy.date}</span><h3 data-result-title>운세를 준비하고 있습니다</h3><p data-result-overall>잠시 후 결과가 표시됩니다.</p><div class="keyword-row"><span>{periodCopy.keyword}</span><strong data-result-keyword>준비</strong></div></div>
+        <ScoreProgress />
+      </header>
+      <div class="quick-score-grid" aria-label="영역별 흐름 점수">
+        <section class="quick-score-card" data-summary-metric="relationship"><span>관계</span><b data-summary-score>0/5</b></section>
+        <section class="quick-score-card" data-summary-metric="work"><span>일·공부</span><b data-summary-score>0/5</b></section>
+        <section class="quick-score-card" data-summary-metric="money"><span>재물</span><b data-summary-score>0/5</b></section>
+        <section class="quick-score-card" data-summary-metric="condition"><span>컨디션</span><b data-summary-score>0/5</b></section>
+      </div>
+    </article>
+    {adPlacement && (
+      <div class="result-ad-break" data-result-ready-ad hidden>
+        <AdFitSlot placement={adPlacement} requiresResult={true} className="adfit-slot--after-summary" />
+      </div>
+    )}
+    <article class="fortune-details" aria-label="운세 상세">
+      <div class="fortune-grid fortune-details-grid">
+        <section class="fortune-metric" data-metric="relationship"><div class="metric-head"><span>💞 관계 상세</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+        <section class="fortune-metric" data-metric="work"><div class="metric-head"><span>📚 일·공부 상세</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+        <section class="fortune-metric" data-metric="money"><div class="metric-head"><span>🪙 재물 상세</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+        <section class="fortune-metric" data-metric="condition"><div class="metric-head"><span>🌿 컨디션 상세</span><b data-score>0/5</b></div><p data-message></p><small data-insight></small></section>
+      </div>
+      <div class="lucky-strip"><div><span>행운 색상</span><strong data-color>-</strong></div><div><span>행운 숫자</span><strong data-number>-</strong></div><div><span>집중 시간</span><strong data-time>-</strong></div><div><span>방향</span><strong data-direction>-</strong></div></div>
+      <div class="action-grid"><section><span class="mini-label good">오늘 해볼 일</span><strong data-action>-</strong></section><section><span class="mini-label caution">조심할 흐름</span><strong data-caution>-</strong></section></div>
+    </article>
     <div class="result-footer"><p><span data-countdown-label>{periodCopy.countdown}</span> <strong data-countdown>--:--:--</strong></p><div class="button-row"><button class="button primary" type="button" data-share-result>결과 공유</button>{!fixedSlug && <a class="button secondary" data-detail-link href="/today/">상세 페이지</a>}<button class="button ghost" type="button" data-install hidden>홈 화면에 추가</button></div></div>
-  </article>
+  </div>
   <p class="fortune-disclaimer">운세는 재미와 자기성찰을 위한 콘텐츠입니다. 건강 증상, 투자, 계약, 법률 문제와 중요한 관계 결정은 확인 가능한 정보와 전문가 조언을 기준으로 하세요.</p>
-  {adPlacement && nextLinks && (
-    <div class="result-followup" data-result-ready-content hidden>
-      <AdFitSlot placement={adPlacement} requiresResult={true} className="adfit-slot--after-result" />
+  {nextLinks && (
+    <div class="result-next-flow" data-result-ready-content hidden>
       <NextFortuneLinks context={nextLinks} fixedType={fixedType} fixedSlug={fixedSlug} />
     </div>
   )}
