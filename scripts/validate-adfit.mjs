@@ -90,6 +90,21 @@ if (!fortuneWidget.includes('fortune:result-rendered')) fail('Fortune results mu
 if (!fortuneWidget.includes('fortune_result_rendered')) fail('Fortune result analytics event is missing');
 if (!fortuneWidget.includes('dataset.resultReady')) fail('Fortune result readiness state is missing');
 if (!fortuneWidget.includes('isCompleteFortuneResult')) fail('Fortune results must validate non-empty result data before ads can mount');
+if (!adfitConfig.includes('fallbackEnvKeys')) fail('afterSummary slots must fall back to existing afterResult env keys');
+for (const legacyKey of [
+  'ADFIT_HOME_AFTER_RESULT_M_320X100',
+  'ADFIT_HOME_AFTER_RESULT_D_728X90',
+  'ADFIT_TODAY_AFTER_RESULT_M_320X100',
+  'ADFIT_TODAY_AFTER_RESULT_D_728X90',
+  'ADFIT_WEEKLY_AFTER_RESULT_M_320X100',
+  'ADFIT_WEEKLY_AFTER_RESULT_D_728X90',
+  'ADFIT_MONTHLY_AFTER_RESULT_M_320X100',
+  'ADFIT_MONTHLY_AFTER_RESULT_D_728X90',
+  'ADFIT_PROFILE_AFTER_RESULT_M_320X100',
+  'ADFIT_PROFILE_AFTER_RESULT_D_728X90'
+]) {
+  if (!adfitConfig.includes(legacyKey)) fail(`src/adfit.ts missing legacy fallback key ${legacyKey}`);
+}
 
 const fortuneApp = await read('src/components/FortuneApp.astro');
 for (const marker of [
@@ -117,16 +132,6 @@ if (fortuneOrder.some((index) => index < 0) || fortuneOrder.some((index, i) => i
 if (fortuneApp.includes('adfit-slot--after-result')) fail('FortuneApp still uses afterResult slot styling');
 
 for (const removed of [
-  'PUBLIC_ADFIT_HOME_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_D_728X90',
-  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_M_320X100',
-  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_D_728X90',
   'PUBLIC_ADFIT_PROFILE_THIRD_ENABLED',
   'PUBLIC_ADFIT_DESKTOP_SIDE_RAIL_ENABLED',
   'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_300X250',
