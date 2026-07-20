@@ -12,18 +12,18 @@ const count = (text, pattern) => (text.match(new RegExp(pattern, 'g')) || []).le
 const requiredEnvKeys = [
   'PUBLIC_ADFIT_ENABLED',
   'PUBLIC_ADFIT_ALLOWED_HOSTS',
-  'PUBLIC_ADFIT_HOME_AFTER_SUMMARY_M_320X100',
-  'PUBLIC_ADFIT_HOME_AFTER_SUMMARY_D_728X90',
+  'PUBLIC_ADFIT_HOME_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_HOME_AFTER_RESULT_D_728X90',
   'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_M_300X250',
   'PUBLIC_ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90',
-  'PUBLIC_ADFIT_TODAY_AFTER_SUMMARY_M_320X100',
-  'PUBLIC_ADFIT_TODAY_AFTER_SUMMARY_D_728X90',
-  'PUBLIC_ADFIT_WEEKLY_AFTER_SUMMARY_M_320X100',
-  'PUBLIC_ADFIT_WEEKLY_AFTER_SUMMARY_D_728X90',
-  'PUBLIC_ADFIT_MONTHLY_AFTER_SUMMARY_M_320X100',
-  'PUBLIC_ADFIT_MONTHLY_AFTER_SUMMARY_D_728X90',
-  'PUBLIC_ADFIT_PROFILE_AFTER_SUMMARY_M_320X100',
-  'PUBLIC_ADFIT_PROFILE_AFTER_SUMMARY_D_728X90',
+  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_TODAY_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_WEEKLY_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_MONTHLY_AFTER_RESULT_D_728X90',
+  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_M_320X100',
+  'PUBLIC_ADFIT_PROFILE_AFTER_RESULT_D_728X90',
   'PUBLIC_ADFIT_PROFILE_MID_LIFE_M_300X250',
   'PUBLIC_ADFIT_PROFILE_MID_LIFE_D_300X250',
   'PUBLIC_ADFIT_DIRECTORY_MID_M_320X100',
@@ -90,8 +90,8 @@ if (!fortuneWidget.includes('fortune:result-rendered')) fail('Fortune results mu
 if (!fortuneWidget.includes('fortune_result_rendered')) fail('Fortune result analytics event is missing');
 if (!fortuneWidget.includes('dataset.resultReady')) fail('Fortune result readiness state is missing');
 if (!fortuneWidget.includes('isCompleteFortuneResult')) fail('Fortune results must validate non-empty result data before ads can mount');
-if (!adfitConfig.includes('fallbackEnvKeys')) fail('afterSummary slots must fall back to existing afterResult env keys');
-for (const legacyKey of [
+if (adfitConfig.includes('AFTER_SUMMARY')) fail('AdFit env keys must remain existing AFTER_RESULT keys');
+for (const envKey of [
   'ADFIT_HOME_AFTER_RESULT_M_320X100',
   'ADFIT_HOME_AFTER_RESULT_D_728X90',
   'ADFIT_TODAY_AFTER_RESULT_M_320X100',
@@ -103,7 +103,7 @@ for (const legacyKey of [
   'ADFIT_PROFILE_AFTER_RESULT_M_320X100',
   'ADFIT_PROFILE_AFTER_RESULT_D_728X90'
 ]) {
-  if (!adfitConfig.includes(legacyKey)) fail(`src/adfit.ts missing legacy fallback key ${legacyKey}`);
+  if (!adfitConfig.includes(envKey)) fail(`src/adfit.ts missing required env key ${envKey}`);
 }
 
 const fortuneApp = await read('src/components/FortuneApp.astro');
