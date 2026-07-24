@@ -41,11 +41,11 @@ Localhost, `127.0.0.1`, `onrender.com` preview hosts, unlisted hosts, test mode,
 | `home.afterSummary` | Home fortune summary, then 56px spacing before the ad and 56px before fortune details | 320x100 | 728x90 |
 | `home.betweenDirectories` | After all 12 zodiac cards, before horoscope cards | 300x250 | 728x90 |
 | `today.afterSummary` | `/today/` summary, then ad, then fortune details, actions, disclaimer, and next-fortune links | 320x100 | 728x90 |
-| `weekly.afterSummary` | `/weekly/` summary, then ad, then fortune details, actions, disclaimer, and next-fortune links | 320x100 | 728x90 |
-| `monthly.afterSummary` | `/monthly/` summary, then ad, then fortune details, actions, disclaimer, and next-fortune links | 320x100 | 728x90 |
+| `weekly.afterSummary` | `/weekly/` page-head description, then ad, then the weekly fortune picker | 320x100 | 728x90 |
+| `monthly.afterSummary` | `/monthly/` page-head description, then ad, then the monthly fortune picker | 320x100 | 728x90 |
 | `profile.afterSummary` | Profile today summary, then ad, then fortune details, actions, disclaimer, follow-up links, and life content | 320x100 | 728x90 |
 | `profile.midLife` | After relationship and work/study, before money habit and condition | 300x250 | 300x250 |
-| `directory.mid` | `/zodiac/` and `/horoscope/` between the first 6 cards and second 6 cards | 320x100 | 728x90 |
+| `directory.mid` | `/zodiac/` and `/horoscope/` page-head description, then ad, then the directory grid | 320x100 | 728x90 |
 
 ## Environment Variables
 

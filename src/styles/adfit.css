@@ -66,6 +66,12 @@ body {
   margin: 56px 0;
 }
 
+.page-head-ad-break {
+  display: grid;
+  justify-items: center;
+  margin-top: 56px;
+}
+
 .result-next-flow {
   margin-top: 56px;
 }
@@ -159,7 +165,8 @@ body {
 }
 
 .adfit-slot--directory-mid,
-.adfit-slot--mid-life {
+.adfit-slot--mid-life,
+.adfit-slot--page-head {
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -194,7 +201,8 @@ body {
 
 @media (max-width: 900px) {
   .result-ad-break,
-  .directory-ad-break {
+  .directory-ad-break,
+  .page-head-ad-break {
     width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);

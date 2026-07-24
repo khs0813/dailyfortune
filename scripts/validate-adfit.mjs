@@ -41,11 +41,31 @@ const sourceChecks = [
   ['src/pages/horoscope/[slug].astro', { 'profile.afterSummary': 1, 'profile.midLife': 1 }]
 ];
 
+const pageHeadAdChecks = [
+  ['src/pages/zodiac/index.astro', 'directory.mid'],
+  ['src/pages/horoscope/index.astro', 'directory.mid'],
+  ['src/pages/weekly.astro', 'weekly.afterSummary'],
+  ['src/pages/monthly.astro', 'monthly.afterSummary']
+];
+
 for (const [path, placements] of sourceChecks) {
   const text = await read(path);
   for (const [placement, expected] of Object.entries(placements)) {
     const actual = count(text, placement.replace('.', '\\.'));
     if (actual !== expected) fail(`${path} expected ${expected} ${placement} slot(s), got ${actual}`);
+  }
+}
+
+for (const [path, placement] of pageHeadAdChecks) {
+  const text = await read(path);
+  if (!text.includes('page-head-ad-break')) fail(`${path} must render its AdFit slot below the page-head description`);
+  const adIndex = text.indexOf(placement);
+  const sectionIndex = text.indexOf('<section');
+  if (adIndex < 0 || sectionIndex < 0 || adIndex > sectionIndex) {
+    fail(`${path} must place ${placement} before the first content section`);
+  }
+  if ((path.endsWith('weekly.astro') || path.endsWith('monthly.astro')) && text.includes('adPlacement=')) {
+    fail(`${path} must not render result-dependent AdFit slots after the summary`);
   }
 }
 

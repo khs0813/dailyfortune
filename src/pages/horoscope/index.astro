@@ -5,8 +5,6 @@ import AdFitSlot from '../../components/AdFitSlot.astro';
 import signs from '../../data/signs.json';
 
 const items = signs.filter((x) => x.type === 'horoscope');
-const firstItems = items.slice(0, 6);
-const secondItems = items.slice(6);
 ---
 <BaseLayout title="12별자리 오늘 운세 전체와 생일 구간 | 오늘운" description="양자리부터 물고기자리까지 12별자리의 생일 구간, 대표 성향과 오늘의 관계·일·재물·컨디션 운세를 확인하세요." adFitPage={true}>
   <header class="page-head">
@@ -15,15 +13,14 @@ const secondItems = items.slice(6);
       <span class="eyebrow">생일 구간으로 찾기</span>
       <h1>12별자리 오늘 운세</h1>
       <p>일반적으로 사용하는 태양 별자리 날짜 구간을 기준으로 정리했습니다. 경계 날짜는 연도와 계산 방식에 따라 달라질 수 있으므로 참고용으로 사용하세요.</p>
+      <div class="page-head-ad-break">
+        <AdFitSlot placement="directory.mid" className="adfit-slot--page-head" />
+      </div>
     </div>
   </header>
   <section class="section">
     <div class="shell">
-      <div class="grid grid-3">{firstItems.map((sign) => <SignCard sign={sign} />)}</div>
-      <div class="directory-ad-break">
-        <AdFitSlot placement="directory.mid" className="adfit-slot--directory-mid" />
-      </div>
-      <div class="grid grid-3">{secondItems.map((sign) => <SignCard sign={sign} />)}</div>
+      <div class="grid grid-3">{items.map((sign) => <SignCard sign={sign} />)}</div>
     </div>
   </section>
   <section class="section soft">

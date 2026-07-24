@@ -1,6 +1,21 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';import FortuneApp from '../components/FortuneApp.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FortuneApp from '../components/FortuneApp.astro';
+import AdFitSlot from '../components/AdFitSlot.astro';
 ---
 <BaseLayout title="이번 달 띠별·별자리 운세와 월간 키워드 | 오늘운" description="띠 또는 별자리를 선택해 이번 달의 관계, 일·공부, 재물, 컨디션 흐름과 한 달 동안 실천할 행동을 확인하세요." adFitPage={true}>
-<header class="page-head"><div class="shell"><nav class="breadcrumb"><a href="/">홈</a><span>›</span><span>월간 운세</span></nav><span class="eyebrow">한 달의 큰 흐름</span><h1>이번 달 운세</h1><p>한 달 전체를 단정하기보다 일정과 습관을 설계할 때 참고할 키워드와 질문으로 사용하세요.</p></div></header><section class="shell" style="padding-bottom:4rem"><FortuneApp period="monthly" title="이번 달의 흐름" description="선택한 프로필과 연·월을 조합해 같은 달에는 같은 결과를 표시합니다." adPlacement="monthly.afterSummary" nextLinks="monthly" /></section>
+  <header class="page-head">
+    <div class="shell">
+      <nav class="breadcrumb"><a href="/">홈</a><span>›</span><span>월간 운세</span></nav>
+      <span class="eyebrow">한 달의 큰 흐름</span>
+      <h1>이번 달 운세</h1>
+      <p>한 달 전체를 단정하기보다 일정과 습관을 설계할 때 참고할 키워드와 질문으로 사용하세요.</p>
+      <div class="page-head-ad-break">
+        <AdFitSlot placement="monthly.afterSummary" className="adfit-slot--page-head" />
+      </div>
+    </div>
+  </header>
+  <section class="shell" style="padding-bottom:4rem">
+    <FortuneApp period="monthly" title="이번 달의 흐름" description="선택한 프로필과 연·월을 조합해 같은 달에는 같은 결과를 표시합니다." nextLinks="monthly" />
+  </section>
 </BaseLayout>
