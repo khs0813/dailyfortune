@@ -42,6 +42,7 @@ const sourceChecks = [
 ];
 
 const pageHeadAdChecks = [
+  ['src/pages/today.astro', 'today.afterSummary'],
   ['src/pages/zodiac/index.astro', 'directory.mid'],
   ['src/pages/horoscope/index.astro', 'directory.mid'],
   ['src/pages/weekly.astro', 'weekly.afterSummary'],
@@ -64,7 +65,10 @@ for (const [path, placement] of pageHeadAdChecks) {
   if (adIndex < 0 || sectionIndex < 0 || adIndex > sectionIndex) {
     fail(`${path} must place ${placement} before the first content section`);
   }
-  if ((path.endsWith('weekly.astro') || path.endsWith('monthly.astro')) && text.includes('adPlacement=')) {
+  if (
+    (path.endsWith('today.astro') || path.endsWith('weekly.astro') || path.endsWith('monthly.astro')) &&
+    text.includes('adPlacement=')
+  ) {
     fail(`${path} must not render result-dependent AdFit slots after the summary`);
   }
 }
@@ -113,6 +117,7 @@ if (!fortuneWidget.includes('fortune_result_rendered')) fail('Fortune result ana
 if (!fortuneWidget.includes('dataset.resultReady')) fail('Fortune result readiness state is missing');
 if (!fortuneWidget.includes('isCompleteFortuneResult')) fail('Fortune results must validate non-empty result data before ads can mount');
 if (adfitConfig.includes('AFTER_SUMMARY')) fail('AdFit env keys must remain existing AFTER_RESULT keys');
+if (!adfitConfig.includes('fallbackEnvKeys')) fail('AdFit config must support page-head fallback units when page-specific units are unset');
 for (const envKey of [
   'ADFIT_HOME_AFTER_RESULT_M_320X100',
   'ADFIT_HOME_AFTER_RESULT_D_728X90',

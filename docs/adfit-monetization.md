@@ -40,7 +40,7 @@ Localhost, `127.0.0.1`, `onrender.com` preview hosts, unlisted hosts, test mode,
 | --- | --- | --- | --- |
 | `home.afterSummary` | Home fortune summary, then 56px spacing before the ad and 56px before fortune details | 320x100 | 728x90 |
 | `home.betweenDirectories` | After all 12 zodiac cards, before horoscope cards | 300x250 | 728x90 |
-| `today.afterSummary` | `/today/` summary, then ad, then fortune details, actions, disclaimer, and next-fortune links | 320x100 | 728x90 |
+| `today.afterSummary` | `/today/` page-head description, then ad, then the daily fortune picker | 320x100 | 728x90 |
 | `weekly.afterSummary` | `/weekly/` page-head description, then ad, then the weekly fortune picker | 320x100 | 728x90 |
 | `monthly.afterSummary` | `/monthly/` page-head description, then ad, then the monthly fortune picker | 320x100 | 728x90 |
 | `profile.afterSummary` | Profile today summary, then ad, then fortune details, actions, disclaimer, follow-up links, and life content | 320x100 | 728x90 |
@@ -76,6 +76,8 @@ Ad unit IDs:
 - `PUBLIC_ADFIT_DIRECTORY_MID_D_728X90`
 
 The code-level placement names are `*.afterSummary`, but the Render environment variable names remain the existing `*_AFTER_RESULT_*` keys to preserve deployed AdFit unit IDs.
+
+`today.afterSummary` and `directory.mid` prefer their page-specific Render variables. If those variables are unset, they fall back to the already configured weekly and then monthly page-head units with the same 320x100 / 728x90 sizes so top-of-page menu ads do not disappear.
 
 Default production allowlist:
 

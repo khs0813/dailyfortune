@@ -16,8 +16,12 @@ export type AdFitVariant = {
 };
 
 type PlacementDefinition = {
-  mobile?: Omit<AdFitVariant, 'unit'>;
-  desktop?: Omit<AdFitVariant, 'unit'>;
+  mobile?: AdFitVariantDefinition;
+  desktop?: AdFitVariantDefinition;
+};
+
+type AdFitVariantDefinition = Omit<AdFitVariant, 'unit'> & {
+  fallbackEnvKeys?: string[];
 };
 
 export const adFitScriptSrc = 'https://t1.kakaocdn.net/kas/static/ba.min.js';
@@ -26,6 +30,21 @@ export const defaultAdFitAllowedHosts = 'fortunedaily.co.kr,www.fortunedaily.co.
 const env = import.meta.env;
 const readEnv = (key: string) => String(env[key] ?? '').trim();
 const publicKey = (key: string) => `PUBLIC_${key}`;
+const pageHeadMobileFallbackEnvKeys = [
+  publicKey('ADFIT_WEEKLY_AFTER_RESULT_M_320X100'),
+  publicKey('ADFIT_MONTHLY_AFTER_RESULT_M_320X100')
+];
+const pageHeadDesktopFallbackEnvKeys = [
+  publicKey('ADFIT_WEEKLY_AFTER_RESULT_D_728X90'),
+  publicKey('ADFIT_MONTHLY_AFTER_RESULT_D_728X90')
+];
+const readFirstEnv = (keys: string[]) => {
+  for (const key of keys) {
+    const value = readEnv(key);
+    if (value) return value;
+  }
+  return '';
+};
 
 const definitions: Record<AdFitPlacement, PlacementDefinition> = {
   'home.afterSummary': {
@@ -37,8 +56,18 @@ const definitions: Record<AdFitPlacement, PlacementDefinition> = {
     desktop: { envKey: publicKey('ADFIT_HOME_BETWEEN_DIRECTORIES_D_728X90'), width: 728, height: 90 }
   },
   'today.afterSummary': {
-    mobile: { envKey: publicKey('ADFIT_TODAY_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_TODAY_AFTER_RESULT_D_728X90'), width: 728, height: 90 }
+    mobile: {
+      envKey: publicKey('ADFIT_TODAY_AFTER_RESULT_M_320X100'),
+      fallbackEnvKeys: pageHeadMobileFallbackEnvKeys,
+      width: 320,
+      height: 100
+    },
+    desktop: {
+      envKey: publicKey('ADFIT_TODAY_AFTER_RESULT_D_728X90'),
+      fallbackEnvKeys: pageHeadDesktopFallbackEnvKeys,
+      width: 728,
+      height: 90
+    }
   },
   'weekly.afterSummary': {
     mobile: { envKey: publicKey('ADFIT_WEEKLY_AFTER_RESULT_M_320X100'), width: 320, height: 100 },
@@ -57,14 +86,25 @@ const definitions: Record<AdFitPlacement, PlacementDefinition> = {
     desktop: { envKey: publicKey('ADFIT_PROFILE_MID_LIFE_D_300X250'), width: 300, height: 250 }
   },
   'directory.mid': {
-    mobile: { envKey: publicKey('ADFIT_DIRECTORY_MID_M_320X100'), width: 320, height: 100 },
-    desktop: { envKey: publicKey('ADFIT_DIRECTORY_MID_D_728X90'), width: 728, height: 90 }
+    mobile: {
+      envKey: publicKey('ADFIT_DIRECTORY_MID_M_320X100'),
+      fallbackEnvKeys: pageHeadMobileFallbackEnvKeys,
+      width: 320,
+      height: 100
+    },
+    desktop: {
+      envKey: publicKey('ADFIT_DIRECTORY_MID_D_728X90'),
+      fallbackEnvKeys: pageHeadDesktopFallbackEnvKeys,
+      width: 728,
+      height: 90
+    }
   }
 };
 
-const withUnit = (variant?: Omit<AdFitVariant, 'unit'>): AdFitVariant | undefined => {
+const withUnit = (variant?: AdFitVariantDefinition): AdFitVariant | undefined => {
   if (!variant) return undefined;
-  return { ...variant, unit: readEnv(variant.envKey) };
+  const { fallbackEnvKeys = [], ...base } = variant;
+  return { ...base, unit: readFirstEnv([base.envKey, ...fallbackEnvKeys]) };
 };
 
 export const isAdFitEnabled = () =>
