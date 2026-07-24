@@ -14,6 +14,8 @@ The official AdFit attributes are preserved:
 - `data-ad-height`
 - SDK: `https://t1.kakaocdn.net/kas/static/ba.min.js`
 
+The SDK URL is defined once in `src/adfit.ts`, passed through the shared layout as `data-adfit-script-src`, and read by `public/js/adfit-slots.js`.
+
 The client chooses exactly one mobile or desktop unit for each slot before loading the SDK. It does not put both variants in the live DOM and it does not call unofficial render APIs.
 
 Localhost, `127.0.0.1`, `onrender.com` preview hosts, unlisted hosts, test mode, and `PUBLIC_ADFIT_ENABLED` values other than `true` do not request ads.

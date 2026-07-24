@@ -5,7 +5,7 @@
     .split(',')
     .map((host) => host.trim())
     .filter(Boolean);
-  const sdkSrc = doc.dataset.adfitScriptSrc || 'https://t1.kakaocdn.net/kas/static/ba.min.js';
+  const sdkSrc = doc.dataset.adfitScriptSrc || '';
   const hostname = window.location.hostname;
   const warned = new Set();
   const mountedPlacements = new Set();
@@ -171,6 +171,10 @@
   };
 
   const requestSdkOnce = () => {
+    if (!sdkSrc) {
+      warnOnce('sdk-src', '[AdFit] Missing SDK URL');
+      return;
+    }
     if (document.querySelector('script[data-adfit-sdk="true"]')) return;
     const script = document.createElement('script');
     script.async = true;

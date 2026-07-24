@@ -69,6 +69,8 @@ const renderYaml = await read('render.yaml');
 const docs = await read('docs/adfit-monetization.md');
 
 if (!adfitConfig.includes('https://t1.kakaocdn.net/kas/static/ba.min.js')) fail('src/adfit.ts must use the current AdFit SDK URL');
+if (adfitClient.includes('t1.kakaocdn.net/kas/static/ba.min.js')) fail('public/js/adfit-slots.js must read the SDK URL from the shared layout data attribute');
+if (!adfitClient.includes('doc.dataset.adfitScriptSrc')) fail('public/js/adfit-slots.js must read the SDK URL from the shared layout data attribute');
 if (!adfitClient.includes('kakao_ad_area')) fail('public/js/adfit-slots.js must create official kakao_ad_area markup');
 for (const attr of ['data-ad-unit', 'data-ad-width', 'data-ad-height']) {
   if (!adfitClient.includes(attr)) fail(`public/js/adfit-slots.js missing ${attr}`);
