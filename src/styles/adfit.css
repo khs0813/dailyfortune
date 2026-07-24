@@ -81,30 +81,14 @@ body {
   --adfit-height: 100px;
   width: var(--adfit-width);
   max-width: 100vw;
-  min-height: calc(var(--adfit-height) + 1.65rem);
+  min-height: var(--adfit-height);
   display: grid;
-  gap: .3rem;
   justify-items: center;
   margin-inline: auto;
-  padding: .45rem 0;
   overflow: visible;
   contain: layout;
   color: var(--muted);
   scroll-margin-bottom: calc(6.5rem + env(safe-area-inset-bottom));
-}
-
-.adfit-slot__label {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1rem;
-  padding: 0 .34rem;
-  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
-  border-radius: 999px;
-  background: #fff;
-  color: #8a7a7a;
-  font-size: .68rem;
-  font-weight: 800;
-  line-height: 1.2;
 }
 
 .adfit-slot__frame {
